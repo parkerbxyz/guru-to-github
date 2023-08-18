@@ -1,0 +1,14 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+guru = {ref = "1.1.0", git = "https://github.com/guruhq/py-sdk.git"}
+ghapi = "*"
+pytest = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.11"
