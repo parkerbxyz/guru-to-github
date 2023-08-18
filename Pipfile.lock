@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "3258fa137c9c05e4d7b5edc5947031175a34ff281e918b3ad404055830328112"
+            "sha256": "dafdc65cce546c4cd314ef3e16e61223eed681ecd6e3a0bbc8cdba33f57f79d7"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -131,7 +131,7 @@
         },
         "guru": {
             "git": "https://github.com/guruhq/py-sdk.git",
-            "ref": "a011f9b1cf3a24db06f9e8eb3f12f253cc4bfee5"
+            "ref": "6c864e1f915bfb0b250d001b3e8c255540b6a8ec"
         },
         "idna": {
             "hashes": [

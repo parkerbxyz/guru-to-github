@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-guru = {ref = "1.1.0", git = "https://github.com/guruhq/py-sdk.git"}
+guru = {ref = "6c864e1", git = "https://github.com/guruhq/py-sdk.git"}
 ghapi = "*"
 pytest = "*"
 
