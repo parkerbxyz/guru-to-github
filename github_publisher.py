@@ -83,6 +83,7 @@ class GitHubPublisher(guru.PublisherFolders):
             # in a consistent object format regardless of the content type
             # https://docs.github.com/en/rest/repos/contents?apiVersion=2022-11-28#custom-media-types-for-repository-contents
             headers=self.get_headers("application/vnd.github.object"),
+            timeout=20,
         )
 
         return response
@@ -107,7 +108,7 @@ class GitHubPublisher(guru.PublisherFolders):
         }
         print(f"Delete a file data: {data}")
 
-        response = requests.delete(url, json=data, headers=self.get_headers())
+        response = requests.delete(url, json=data, headers=self.get_headers(), timeout=20)
 
         if not response.ok:
             raise Exception(f"Failed to delete {path}")
@@ -130,7 +131,7 @@ class GitHubPublisher(guru.PublisherFolders):
         query_parameters = "?recursive=1" if recursive else ""
         url = f"{github_api_url}/repos/{repository}/git/trees/{tree_sha}{query_parameters}"
 
-        response = requests.get(url, headers=self.get_headers())
+        response = requests.get(url, headers=self.get_headers(), timeout=20)
         results = response.json()
 
         return results
@@ -152,7 +153,7 @@ class GitHubPublisher(guru.PublisherFolders):
         retries = Retry(total=10, backoff_factor=1, status_forcelist=[502])
         session.mount("https://", HTTPAdapter(max_retries=retries))
 
-        response = session.post(url, json=data, headers=self.get_headers())
+        response = session.post(url, json=data, headers=self.get_headers(), timeout=20)
 
         if not response.ok:
             raise Exception(
@@ -287,7 +288,7 @@ class GitHubPublisher(guru.PublisherFolders):
             "branch": github_ref_name,
         }
 
-        response = requests.put(url, json=data, headers=self.get_headers())
+        response = requests.put(url, json=data, headers=self.get_headers(), timeout=20)
 
         if not response.ok:
             raise Exception(
@@ -321,7 +322,7 @@ class GitHubPublisher(guru.PublisherFolders):
             "parents": parents,
         }
 
-        response = requests.post(url, json=data, headers=self.get_headers())
+        response = requests.post(url, json=data, headers=self.get_headers(), timeout=20)
 
         if not response.ok:
             raise Exception(
@@ -341,7 +342,7 @@ class GitHubPublisher(guru.PublisherFolders):
         repository = environ["GITHUB_REPOSITORY"]
         url = f"{github_api_url}/repos/{repository}/branches/{branch}"
 
-        response = requests.get(url, headers=self.get_headers())
+        response = requests.get(url, headers=self.get_headers(), timeout=20)
 
         results = response.json()
 
@@ -357,7 +358,7 @@ class GitHubPublisher(guru.PublisherFolders):
         url = f"{github_api_url}/repos/{repository}/commits/{ref}"
 
         response = requests.get(
-            url, headers=self.get_headers("application/vnd.github.sha")
+            url, headers=self.get_headers("application/vnd.github.sha"), timeout=20
         )
 
         results = response.text
@@ -380,7 +381,9 @@ class GitHubPublisher(guru.PublisherFolders):
             "sha": sha,
         }
 
-        response = requests.patch(url, json=data, headers=self.get_headers())
+        response = requests.patch(
+            url, json=data, headers=self.get_headers(), timeout=20
+        )
 
         if not response.ok:
             raise Exception(
