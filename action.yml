@@ -1,6 +1,9 @@
 ---
 name: "Guru to GitHub"
 description: "Sync content from Guru to GitHub"
+branding:
+  icon: "copy"
+  color: "green"
 inputs:
   guru_collection_id:
     description: "ID of the Guru collection to sync"
