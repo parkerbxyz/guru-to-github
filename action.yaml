@@ -25,7 +25,7 @@ runs:
         pipenv install
 
         # Sync collection
-        pipenv run python github_publisher.py
+        pipenv run python ${{ github.action_path }}/github_publisher.py
 
         # Pull changes from sync so we can update the metadata file
         git pull
