@@ -1,4 +1,4 @@
-# guru-to-github
+# Guru to GitHub
 
 Sync card content from a Guru collection to a GitHub repository.
 
