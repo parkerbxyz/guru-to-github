@@ -13,6 +13,9 @@ name: Guru to GitHub
 
 on:
   workflow_dispatch:
+  schedule:
+    # Every 6 hours
+    - cron: '0 */6 * * *'
 
 jobs:
   guru-to-github:
