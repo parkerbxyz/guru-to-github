@@ -18,7 +18,7 @@ runs:
     - uses: actions/setup-python@v4
       with:
         cache: "pipenv"
-        cache-dependency-path: "${{ github.action_path }}/Pipfile.lock"
+        cache-dependency-path: "${{ github.workspace }}/Pipfile.lock"
         python-version-file: "${{ github.action_path }}/.python-version"
     - name: Install dependencies and sync collection
       run: |
