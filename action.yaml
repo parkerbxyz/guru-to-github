@@ -37,3 +37,4 @@ runs:
       with:
         file_pattern: "*GitHubPublisher.json"
         commit_message: "Update GitHubPublisher.json"
+        commit_author: "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
