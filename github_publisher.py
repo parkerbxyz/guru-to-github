@@ -17,6 +17,10 @@ from requests.adapters import HTTPAdapter, Retry
 
 
 class GitHubPublisher(guru.PublisherFolders):
+    """
+    Publish card content from a Guru collection to a given directory in a GitHub repository.
+    """
+
     def __init__(self, source):
         super().__init__(source)
         # self.dry_run = True
