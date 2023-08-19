@@ -1,4 +1,4 @@
 overrides:
-  - files: '*.json'
+  - files: "*.json"
     options:
       useTabs: true
