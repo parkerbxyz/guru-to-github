@@ -20,12 +20,18 @@ runs:
         python-version-file: "${{ github.action_path }}/.python-version"
     - name: Install dependencies and sync collection
       run: |
-        export PIPENV_PIPFILE=${{ github.action_path }}/Pipfile
-        exec pipenv install
-        exec pipenv run python github_publisher.py
+
+        # Install dependencies
+        pipenv install
+
+        # Sync collection
+        pipenv run python github_publisher.py
+
+        # Pull changes from sync so we can update the metadata file
         git pull
       shell: bash
       env:
+        PIPENV_PIPFILE: ${{ github.action_path }}/Pipfile # https://stackoverflow.com/a/56412201
         GURU_COLLECTION_ID: ${{ inputs.guru_collection_id }}
         COLLECTION_DIRECTORY_PATH: ${{ inputs.collection_directory_path }}
     - uses: stefanzweifel/git-auto-commit-action@3ea6ae190baf489ba007f7c92608f33ce20ef04a # v4.16.0
