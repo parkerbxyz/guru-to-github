@@ -7,11 +7,26 @@
 		".vscode",
 		"megalinter",
 		"package-lock.json",
-		"report"
+		"report",
+		"Pipfile*"
 	],
 	"language": "en",
 	"noConfigSearch": true,
-	"words": ["forcelist", "megalinter", "oxsecurity"],
+	"words": [
+		"forcelist",
+		"megalinter",
+		"noreply",
+		"oxsecurity",
+		"parkerbxyz",
+		"stefanzweifel"
+	],
 	"dictionaries": ["bash", "python", "softwareTerms"],
+	"overrides": [
+		{
+			"filename": "**/*megalinter_file_names_cspell.txt",
+			"caseSensitive": false,
+			"allowCompoundWords": true
+		}
+	],
 	"version": "0.2"
 }
