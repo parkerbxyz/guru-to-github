@@ -24,9 +24,6 @@ runs:
         # Install dependencies
         pipenv install
 
-        # Change directory to collection directory so the metadata file is put in the same directory as the collection
-        cd ${{ inputs.collection_directory_path }}
-
         # Sync collection
         pipenv run python ${{ github.action_path }}/github_publisher.py
 
