@@ -21,12 +21,7 @@
 		"releaserc",
 		"stefanzweifel"
 	],
-	"dictionaries": [
-		"bash",
-		"python",
-		"softwareTerms",
-		"html"
-	],
+	"dictionaries": ["bash", "python", "softwareTerms", "html"],
 	"overrides": [
 		{
 			"filename": "**/*megalinter_file_names_cspell.txt",
