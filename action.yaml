@@ -20,8 +20,9 @@ runs:
         python-version-file: "${{ github.action_path }}/.python-version"
     - name: Install dependencies and sync collection
       run: |
-        pipenv install
-        pipenv run python ${{ github.action_path }}/github_publisher.py
+        export PIPENV_PIPFILE=${{ github.action_path }}/Pipfile
+        exec pipenv install
+        exec pipenv run python github_publisher.py
         git pull
       shell: bash
       env:
