@@ -1,0 +1,33 @@
+{
+	"ignorePaths": [
+		"**/node_modules/**",
+		"**/vscode-extension/**",
+		"**/.git/**",
+		"**/.pnpm-lock.json",
+		".vscode",
+		"megalinter",
+		"package-lock.json",
+		"report",
+		"Pipfile*"
+	],
+	"language": "en",
+	"noConfigSearch": true,
+	"words": [
+		"forcelist",
+		"megalinter",
+		"noreply",
+		"oxsecurity",
+		"parkerbxyz",
+		"releaserc",
+		"stefanzweifel"
+	],
+	"dictionaries": ["bash", "python", "softwareTerms", "html"],
+	"overrides": [
+		{
+			"filename": "**/*megalinter_file_names_cspell.txt",
+			"caseSensitive": false,
+			"allowCompoundWords": true
+		}
+	],
+	"version": "0.2"
+}

@@ -1,0 +1,41 @@
+---
+name: "Guru to GitHub"
+description: "Sync content from Guru to GitHub"
+inputs:
+  guru_collection_id:
+    description: "ID of the Guru collection to sync"
+    required: true
+  collection_directory_path:
+    description: "Path to the directory where the collection should be synced to"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v3
+    - name: Install pipenv
+      shell: bash
+      run: pip install --user pipenv
+    - uses: actions/setup-python@v4
+      with:
+        python-version-file: "${{ github.action_path }}/.python-version"
+    - name: Install dependencies
+      shell: bash
+      run: pipenv install
+      env:
+        PIPENV_PIPFILE: ${{ github.action_path }}/Pipfile
+    - name: Sync collection
+      shell: bash
+      run: pipenv run python ${{ github.action_path }}/github_publisher.py
+      env:
+        PIPENV_PIPFILE: ${{ github.action_path }}/Pipfile
+        GURU_COLLECTION_ID: ${{ inputs.guru_collection_id }}
+        COLLECTION_DIRECTORY_PATH: ${{ inputs.collection_directory_path }}
+    - name: Pull changes from sync so we can update the metadata file
+      shell: bash
+      run: git pull
+    - uses: stefanzweifel/git-auto-commit-action@3ea6ae190baf489ba007f7c92608f33ce20ef04a # v4.16.0
+      with:
+        file_pattern: "*GitHubPublisher.json"
+        commit_message: "Update GitHubPublisher.json"
+        commit_author: "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
