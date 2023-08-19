@@ -20,7 +20,7 @@
 		"parkerbxyz",
 		"stefanzweifel"
 	],
-	"dictionaries": ["bash", "python", "softwareTerms"],
+	"dictionaries": ["bash", "python", "softwareTerms", "html"],
 	"overrides": [
 		{
 			"filename": "**/*megalinter_file_names_cspell.txt",
