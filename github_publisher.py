@@ -108,7 +108,9 @@ class GitHubPublisher(guru.PublisherFolders):
         }
         print(f"Delete a file data: {data}")
 
-        response = requests.delete(url, json=data, headers=self.get_headers(), timeout=20)
+        response = requests.delete(
+            url, json=data, headers=self.get_headers(), timeout=20
+        )
 
         if not response.ok:
             raise Exception(f"Failed to delete {path}")
