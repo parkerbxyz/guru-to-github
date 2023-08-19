@@ -7,6 +7,10 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+  pull-requests: write
+
 env: # Comment env block if you do not want to apply fixes
   # Apply linter fixes configuration
   APPLY_FIXES: none # When active, APPLY_FIXES must also be defined as environment variable (in github/workflows/mega-linter.yml or other CI tool)
@@ -21,9 +25,6 @@ jobs:
   build:
     name: MegaLinter
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
     steps:
       # Git Checkout
       - name: Checkout Code
@@ -36,7 +37,7 @@ jobs:
       - name: MegaLinter
         id: ml
         # More info at https://megalinter.io/latest/flavors/
-        uses: oxsecurity/megalinter/flavors/python@v7
+        uses: oxsecurity/megalinter/flavors/python@fda6ac3a38be0e969820709ac16e442464e5a035 # v7.3.0
         env:
           # All available variables are described in documentation
           # https://megalinter.io/latest/configuration/
