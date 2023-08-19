@@ -103,7 +103,6 @@ class GitHubPublisher(guru.PublisherFolders):
             else self.get_repository_content(path).json().get("sha"),
             "branch": github_ref_name,
         }
-        print(f"Delete a file data: {data}")
 
         response = requests.delete(
             url, json=data, headers=self.get_headers(), timeout=20
@@ -114,8 +113,6 @@ class GitHubPublisher(guru.PublisherFolders):
 
         # Clear repository content cache
         self.get_repository_content.cache_clear()
-
-        print(f"Delete a file response: {response}")
 
         return response
 
@@ -195,8 +192,6 @@ class GitHubPublisher(guru.PublisherFolders):
         """
         This builds the path for a folder in the GitHub repository.
         """
-        print(f"Folder: {folder.json()}")
-
         # Ensure we have the full folder object
         folder: guru.Folder = source.get_folder(folder.id)
         # folder: guru.Folder = guru.Guru.get_folder(folder.id)
@@ -228,17 +223,12 @@ class GitHubPublisher(guru.PublisherFolders):
 
         if folders_for_card:
             first_folder = source.get_folder(folders_for_card[0])
-            print(f"First folder for card: {first_folder}")
             first_folder_path = self.get_external_folder_path(first_folder)
-            print(f"First folder path for card: {first_folder_path}")
             card_path = f"{first_folder_path}/{self.slugify(card.title)}.md"
         else:
-            print(f"Card has no folders: {card}")
             collection = card.collection
             collection_path = self.get_external_collection_path(collection)
             card_path = f"{collection_path}/{self.slugify(card.title)}.md"
-
-        print(f"Card path: {card_path}")
 
         return card_path
 
@@ -353,7 +343,6 @@ class GitHubPublisher(guru.PublisherFolders):
         )
 
         results = response.text
-        print(f"Get a commit results: {results}")
 
         return results
 
@@ -397,7 +386,6 @@ class GitHubPublisher(guru.PublisherFolders):
 
         base_tree = self.get_a_tree(latest_commit_sha, recursive=True)
         base_tree_sha = base_tree.get("sha")
-        print(f"Base tree SHA: {base_tree_sha}")
 
         new_tree_structure = [
             {
@@ -649,7 +637,6 @@ class GitHubPublisher(guru.PublisherFolders):
             "div", class_="ghq-card-content__iframe-responsive-wrapper"
         )
         for wrapper in iframe_wrappers:
-            print(wrapper.iframe["src"])
             wrapper.replace_with(wrapper.iframe["src"])
 
         # Add a title to the content that links to the card in Guru
