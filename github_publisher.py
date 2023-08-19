@@ -43,14 +43,12 @@ class GitHubPublisher(guru.PublisherFolders):
         """
         Get metadata for a Guru card or collection.
         """
-        print("Running get_metadata...")
         return self._PublisherFolders__metadata.get(guru_id, {})
 
     def get_guru_id(self, external_id: str):
         """
         Get the Guru ID for a given external ID.
         """
-        print("Running get_guru_id...")
         for guru_id, metadata in self._PublisherFolders__metadata.items():
             if metadata.get("external_id") == external_id:
                 return guru_id
@@ -93,7 +91,6 @@ class GitHubPublisher(guru.PublisherFolders):
         Delete a file in a GitHub repository.
         Documentation: https://docs.github.com/rest/repos/contents#delete-a-file
         """
-        print("Running delete_a_file...")
         github_api_url = environ["GITHUB_API_URL"]
         repository = environ["GITHUB_REPOSITORY"]
         url = f"{github_api_url}/repos/{repository}/contents/{path}"
@@ -127,7 +124,6 @@ class GitHubPublisher(guru.PublisherFolders):
         """
         Get a GitHub repository tree by its SHA.
         """
-        print("Running get_a_tree...")
         github_api_url = environ["GITHUB_API_URL"]
         repository = environ["GITHUB_REPOSITORY"]
         query_parameters = "?recursive=1" if recursive else ""
@@ -142,7 +138,6 @@ class GitHubPublisher(guru.PublisherFolders):
         """
         Create a tree in a GitHub repository.
         """
-        print("Running create_a_tree...")
         github_api_url = environ["GITHUB_API_URL"]
         repository = environ["GITHUB_REPOSITORY"]
         url = f"{github_api_url}/repos/{repository}/git/trees"
@@ -229,8 +224,6 @@ class GitHubPublisher(guru.PublisherFolders):
         This builds the path(s) for a card in the GitHub repository.
         Since a card may be in multiple folders, it may have multiple paths.
         """
-        # TODO: Add support for multiple paths
-        print("Running get_card_path...")
         folders_for_card = card.folders
 
         if folders_for_card:
@@ -261,7 +254,6 @@ class GitHubPublisher(guru.PublisherFolders):
         Create or update a file in a GitHub repository.
         Documentation: https://docs.github.com/rest/repos/contents#create-or-update-file-contents
         """
-        print("Running create_or_update_file_contents...")
         github_api_url = environ["GITHUB_API_URL"]
         repository = environ["GITHUB_REPOSITORY"]
         url = f"{github_api_url}/repos/{repository}/contents/{path}"
@@ -313,7 +305,6 @@ class GitHubPublisher(guru.PublisherFolders):
         Create a new Git commit object.
         Documentation: https://docs.github.com/rest/git/commits#create-a-commit
         """
-        print("Running create_a_commit...")
         github_api_url = environ["GITHUB_API_URL"]
         repository = environ["GITHUB_REPOSITORY"]
         url = f"{github_api_url}/repos/{repository}/git/commits"
@@ -339,7 +330,6 @@ class GitHubPublisher(guru.PublisherFolders):
         """
         Get a Git branch object.
         """
-        print("Running get_a_branch...")
         github_api_url = environ["GITHUB_API_URL"]
         repository = environ["GITHUB_REPOSITORY"]
         url = f"{github_api_url}/repos/{repository}/branches/{branch}"
@@ -354,7 +344,6 @@ class GitHubPublisher(guru.PublisherFolders):
         """
         Get a Git commit object.
         """
-        print("Running get_a_commit...")
         github_api_url = environ["GITHUB_API_URL"]
         repository = environ["GITHUB_REPOSITORY"]
         url = f"{github_api_url}/repos/{repository}/commits/{ref}"
@@ -373,7 +362,6 @@ class GitHubPublisher(guru.PublisherFolders):
         Update a Git reference.
         Documentation: https://docs.github.com/rest/git/refs#update-a-reference
         """
-        print("Running update_a_reference...")
         github_api_url = environ["GITHUB_API_URL"]
         repository = environ["GITHUB_REPOSITORY"]
         # url = f"{github_api_url}/repos/{repository}/git/refs/{ref}"
@@ -403,11 +391,6 @@ class GitHubPublisher(guru.PublisherFolders):
         """
         Rename a file or directory in a GitHub repository.
         """
-        print("Running rename_file_or_directory...")
-        # Review https://www.levibotelho.com/development/commit-a-file-with-the-github-api/
-        # and https://medium.com/@obodley/renaming-a-file-using-the-git-api-fed1e6f04188
-        # TODO: Add support for renaming files (might need to check guru_id.type)
-
         github_ref = environ["GITHUB_REF"]
         github_ref_name = environ["GITHUB_REF_NAME"]
         latest_commit_sha = self.get_a_branch(github_ref_name).get("commit").get("sha")
@@ -460,8 +443,6 @@ class GitHubPublisher(guru.PublisherFolders):
         This builds the URL for a Markdown file in the GitHub repo. We use this
         to convert links between Guru Cards to be links between Markdown documents.
         """
-        print("Running get_external_url...")
-
         if not external_id:
             return None
 
@@ -474,9 +455,6 @@ class GitHubPublisher(guru.PublisherFolders):
         This checks if a collection already exists in GitHub by checking for one
         with the same name. Guru collections are folders in a GitHub repository.
         """
-        print("Running find_external_collection...")
-        # return self.get_external_id(collection.id)
-
         expected_path = f"{self.get_external_collection_path(collection)}/README.md"
         response = self.get_repository_content(expected_path)
 
@@ -492,7 +470,6 @@ class GitHubPublisher(guru.PublisherFolders):
         collection in GitHub. Since Git doesn't track empty directories, we'll create a
         README.md file in the new collection directory with the collection description.
         """
-        print("Running create_external_collection...")
         collection_path = self.get_external_collection_path(collection)
 
         return self.create_or_update_file_contents(
@@ -542,7 +519,6 @@ class GitHubPublisher(guru.PublisherFolders):
         """
         Delete a collection in a GitHub repository.
         """
-        print("Running delete_external_collection...")
         collection_id = self.get_guru_id(external_id)
         if collection_id:
             collection_metadata = self.get_metadata(collection_id)
@@ -649,7 +625,6 @@ class GitHubPublisher(guru.PublisherFolders):
         This checks if a card already exists externally by looking for a Markdown
         file with the same name.
         """
-        print("Running find_external_card...")
         expected_path = self.get_external_card_path(card)
         response = self.get_repository_content(expected_path)
 
@@ -667,7 +642,6 @@ class GitHubPublisher(guru.PublisherFolders):
         """
         Convert card content to be more GitHub-flavored Markdown friendly.
         """
-        print("Running convert_card_content...")
         content: BeautifulSoup = card.doc
 
         # Replace Guru iframe wrappers with links to their source
@@ -690,7 +664,6 @@ class GitHubPublisher(guru.PublisherFolders):
 
         NOTE: Pass only a folder or collection. Logic will default to collection first.
         """
-        print("Running create_external_card...")
         # This method has to return the external_id of the new card. We need
         # to remember the path that's associated with each Guru card so
         # the next time we publish this card we can make the 'update' call to
@@ -778,7 +751,6 @@ class GitHubPublisher(guru.PublisherFolders):
     def delete_external_card(self, external_id):
         # If we want to automatically delete Markdown documents when their
         # corresponding Guru cards are archived, we could implement that here.
-        print("Running delete_external_card...")
         card_name = external_id["name"]
         card_path = external_id["path"]
         card_sha = self.get_repository_content(card_path).json().get("sha")
