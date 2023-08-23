@@ -23,7 +23,6 @@ class GitHubPublisher(guru.PublisherFolders):
 
     def __init__(self, source):
         super().__init__(source)
-        # self.dry_run = True
 
     def get_headers(self, media_type="application/vnd.github+json"):
         headers = {
@@ -642,6 +641,14 @@ class GitHubPublisher(guru.PublisherFolders):
         )
         for wrapper in iframe_wrappers:
             wrapper.replace_with(wrapper.iframe["src"])
+
+        # Get all images from card content
+        images = content.select("img")
+        for image in images:
+            print(f"Image: {image}")
+
+        # Download images and replace image URLs with local file paths
+
 
         # Add a title to the content that links to the card in Guru
         return f"# [{card.title}]({card.url})\n\n{content.prettify()}"
