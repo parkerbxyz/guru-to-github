@@ -650,6 +650,7 @@ class GitHubPublisher(guru.PublisherFolders):
             guru.download_file(
                 image.attrs.get("src"),
                 f"{collection_path}/images/{filename}",
+                headers={"Authorization": source._Guru__get_basic_auth_value()}
             )
             image.attrs["src"] = f"images/{filename}"
 
