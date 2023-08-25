@@ -4,6 +4,7 @@ Sync card content from Guru to a GitHub repository.
 
 import base64
 import re
+import subprocess
 import time
 import uuid
 from functools import lru_cache
@@ -642,13 +643,43 @@ class GitHubPublisher(guru.PublisherFolders):
         # Download images and replace image URLs with local file paths
         for image in content.select("img"):
             filename = image.attrs.get("data-ghq-card-content-image-filename")
+            file_extension = path.splitext(filename)[1]
+
             collection_path: str = self.get_external_collection_path(card.collection)
+            image_relative_path = f"resources/{filename}"
+            image_absolute_path = f"{collection_path}/{image_relative_path}"
             guru.download_file(
                 image.attrs.get("src"),
-                f"{collection_path}/images/{filename}",
-                headers={"Authorization": source._Guru__get_basic_auth_value()}
+                image_absolute_path,
+                headers={"Authorization": source._Guru__get_basic_auth_value()},
             )
-            image.attrs["src"] = f"images/{filename}"
+            image.attrs["src"] = image_relative_path
+
+            # Ensure the file extension is tracked by Git LFS
+            subprocess.run(["git", "lfs", "track", f"*.{file_extension}"], check=True)
+
+            # Stage the file for commit
+            subprocess.run(["git", "add", image_absolute_path], check=True)
+
+            # Set the commit message based on whether the file is new or not
+            untracked_files = subprocess.run(
+                ["git", "ls-files", "--others", "--exclude-standard"],
+                capture_output=True,
+                check=True,
+            )
+            if image_absolute_path in untracked_files.stdout.decode("utf-8"):
+                commit_message = f"Create {filename}"
+            else:
+                commit_message = f"Update {filename}"
+
+            # Commit the file
+            subprocess.run(
+                ["git", "commit", image_absolute_path, "-m", commit_message],
+                check=True,
+            )
+
+        # Push any commits that were made
+        subprocess.run(["git", "push"], check=True)
 
         # Add a title to the content that links to the card in Guru
         return f"# [{card.title}]({card.url})\n\n{content.prettify()}"
