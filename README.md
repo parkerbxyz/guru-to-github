@@ -37,4 +37,3 @@ jobs:
 ### Limitations
 
 Cards in Guru can live in multiple folders. This action will only create a file for the first folder that the card is found in.
-
