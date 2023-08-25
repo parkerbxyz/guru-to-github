@@ -642,13 +642,16 @@ class GitHubPublisher(guru.PublisherFolders):
         for wrapper in iframe_wrappers:
             wrapper.replace_with(wrapper.iframe["src"])
 
-        # Get all images from card content
-        images = content.select("img")
-        for image in images:
-            print(f"Image: {image}")
 
         # Download images and replace image URLs with local file paths
-
+        for image in content.select("img"):
+            filename = image.attrs.get("data-ghq-card-content-image-filename")
+            collection_path: str = self.get_external_collection_path(card.collection)
+            guru.download_file(
+                image.attrs.get("src"),
+                f"{collection_path}/images/{filename}",
+            )
+            image.attrs["src"] = f"images/{filename}"
 
         # Add a title to the content that links to the card in Guru
         return f"# [{card.title}]({card.url})\n\n{content.prettify()}"
