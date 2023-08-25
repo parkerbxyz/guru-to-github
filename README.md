@@ -7,7 +7,7 @@ Sync card content from a Guru collection to a GitHub repository.
 
 ## Usage
 
-This action publishes a Guru collection to a directory in a GitHub repository. It will create a Markdown file for each card in the collection.
+This action publishes a Guru collection to a directory in a GitHub repository, creating a Markdown file for each card in the collection.
 
 **Example workflow:**
 
