@@ -3,7 +3,7 @@
 Sync card content from a Guru collection to a GitHub repository.
 
 > [!NOTE]
-> If you're looking to sync Markdown files from a GitHub repository to a Guru collection, check out [peckjon/github-to-guru](https://github.com/marketplace/actions/github-to-guru).
+> If you're looking to sync content from a GitHub repository to a Guru collection, check out [peckjon/github-to-guru](https://github.com/marketplace/actions/github-to-guru).
 
 ## Usage
 
