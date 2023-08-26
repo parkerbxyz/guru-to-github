@@ -661,26 +661,6 @@ class GitHubPublisher(guru.PublisherFolders):
             # Stage the file for commit
             subprocess.run(["git", "add", image_absolute_path], check=True)
 
-            # Set the commit message based on whether the file is new or not
-            untracked_files = subprocess.run(
-                ["git", "ls-files", "--others", "--exclude-standard"],
-                capture_output=True,
-                check=True,
-            )
-            if image_absolute_path in untracked_files.stdout.decode("utf-8"):
-                commit_message = f"Create {filename}"
-            else:
-                commit_message = f"Update {filename}"
-
-            # Commit the file
-            subprocess.run(
-                ["git", "commit", image_absolute_path, "-m", commit_message],
-                check=True,
-            )
-
-        # Push any commits that were made
-        subprocess.run(["git", "push"], check=True)
-
         # Add a title to the content that links to the card in Guru
         return f"# [{card.title}]({card.url})\n\n{content.prettify()}"
 
