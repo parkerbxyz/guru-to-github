@@ -656,7 +656,7 @@ class GitHubPublisher(guru.PublisherFolders):
             image.attrs["src"] = image_relative_path
 
             # Ensure the file extension is tracked by Git LFS
-            subprocess.run(["git", "lfs", "track", f"*.{file_extension}"], check=True)
+            subprocess.run(["git", "lfs", "track", f"*{file_extension}"], check=True)
 
             # Stage the file for commit
             subprocess.run(["git", "add", image_absolute_path], check=True)
