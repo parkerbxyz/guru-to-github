@@ -636,12 +636,9 @@ class GitHubPublisher(guru.PublisherFolders):
         """
         content: BeautifulSoup = card.doc
 
-        # Replace Guru iframe wrappers with links to their source
-        iframe_wrappers = content.find_all(
-            "div", class_="ghq-card-content__iframe-responsive-wrapper"
-        )
-        for wrapper in iframe_wrappers:
-            wrapper.replace_with(wrapper.iframe["src"])
+        # Replace iframes with links to their source
+        for iframe in content.select("iframe"):
+            iframe.replace_with(iframe.attrs.get("src"))
 
         # Add a title to the content that links to the card in Guru
         return f"# [{card.title}]({card.url})\n\n{content.prettify()}"
