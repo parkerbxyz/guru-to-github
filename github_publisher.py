@@ -71,13 +71,13 @@ class GitHubPublisher(guru.PublisherFolders):
         metadata["external_url"] = response_json["html_url"]
 
     @lru_cache
-    def get_repository_content(self, path=""):
+    def get_repository_content(self, file_path=""):
         """
         Get the contents of a file or directory in a GitHub repository.
         """
         github_api_url = environ["GITHUB_API_URL"]
         repository = environ["GITHUB_REPOSITORY"]
-        url = f"{github_api_url}/repos/{repository}/contents/{path}"
+        url = f"{github_api_url}/repos/{repository}/contents/{file_path}"
 
         response = requests.get(
             url,
@@ -90,21 +90,21 @@ class GitHubPublisher(guru.PublisherFolders):
 
         return response
 
-    def delete_a_file(self, path: str, commit_message: str, sha: str):
+    def delete_a_file(self, file_path: str, commit_message: str, sha: str):
         """
         Delete a file in a GitHub repository.
         Documentation: https://docs.github.com/rest/repos/contents#delete-a-file
         """
         github_api_url = environ["GITHUB_API_URL"]
         repository = environ["GITHUB_REPOSITORY"]
-        url = f"{github_api_url}/repos/{repository}/contents/{path}"
+        url = f"{github_api_url}/repos/{repository}/contents/{file_path}"
         github_ref_name = environ["GITHUB_REF_NAME"]
 
         data = {
             "message": commit_message,
             "sha": sha
             if not None
-            else self.get_repository_content(path).json().get("sha"),
+            else self.get_repository_content(file_path).json().get("sha"),
             "branch": github_ref_name,
         }
 
@@ -113,7 +113,7 @@ class GitHubPublisher(guru.PublisherFolders):
         )
 
         if not response.ok:
-            print(f"Failed to delete {path}")
+            print(f"Failed to delete {file_path}")
             response.raise_for_status()
 
         # Clear repository content cache
@@ -239,7 +239,7 @@ class GitHubPublisher(guru.PublisherFolders):
     def create_or_update_file_contents(
         self,
         guru_id: str,
-        path: str,
+        file_path: str,
         commit_message: str,
         content: str,
         sha="",
@@ -250,21 +250,21 @@ class GitHubPublisher(guru.PublisherFolders):
         """
         github_api_url = environ["GITHUB_API_URL"]
         repository = environ["GITHUB_REPOSITORY"]
-        url = f"{github_api_url}/repos/{repository}/contents/{path}"
+        url = f"{github_api_url}/repos/{repository}/contents/{file_path}"
         github_ref_name = environ["GITHUB_REF_NAME"]
 
-        file_exists = self.get_repository_content(path).ok
+        file_exists = self.get_repository_content(file_path).ok
         if file_exists:
             # SHA is required when updating an existing file
-            sha = sha or self.get_repository_content(path).json().get("sha")
+            sha = sha or self.get_repository_content(file_path).json().get("sha")
 
             # Compare the content of the file in the repository to the content
             # we're trying to publish. If they're the same, don't update the file.
             # This prevents unnecessary commits to the repository.
-            file_content = self.get_repository_content(path).json().get("content")
+            file_content = self.get_repository_content(file_path).json().get("content")
             file_content = str(base64.b64decode(file_content), "utf-8")
             if file_content == content:
-                return self.get_repository_content(path)
+                return self.get_repository_content(file_path)
 
         data = {
             "message": commit_message,
