@@ -1,0 +1,3 @@
+{
+	"pylint.path": ["${workspaceFolder}/.venv/bin/pylint"]
+}

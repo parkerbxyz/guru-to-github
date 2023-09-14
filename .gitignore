@@ -1,3 +1,5 @@
 megalinter-reports/
 __pycache__/
 .pytest_cache/
+GitHubPublisher.json
+.vscode/launch.json
