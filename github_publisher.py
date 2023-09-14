@@ -113,7 +113,8 @@ class GitHubPublisher(guru.PublisherFolders):
         )
 
         if not response.ok:
-            raise Exception(f"Failed to delete {path}")
+            print(f"Failed to delete {path}")
+            response.raise_for_status()
 
         # Clear repository content cache
         self.get_repository_content.cache_clear()
@@ -154,9 +155,8 @@ class GitHubPublisher(guru.PublisherFolders):
         response = session.post(url, json=data, headers=self.get_headers(), timeout=20)
 
         if not response.ok:
-            raise Exception(
-                f"Failed to create a tree. Reason: {response.reason} ({response.status_code})."
-            )
+            print("Failed to create a tree")
+            response.raise_for_status()
 
         results = response.json()
 
@@ -279,9 +279,8 @@ class GitHubPublisher(guru.PublisherFolders):
         response = requests.put(url, json=data, headers=self.get_headers(), timeout=20)
 
         if not response.ok:
-            raise Exception(
-                f"Failed to create or update file contents. Reason: {response.reason} ({response.status_code})."
-            )
+            print("Failed to create or update file contents")
+            response.raise_for_status()
 
         if response.status_code == 200:  # OK (Updated)
             self.update_external_metadata(guru_id, response.json())
@@ -312,9 +311,8 @@ class GitHubPublisher(guru.PublisherFolders):
         response = requests.post(url, json=data, headers=self.get_headers(), timeout=20)
 
         if not response.ok:
-            raise Exception(
-                f"Failed to create a commit. Reason: {response.reason} ({response.status_code})."
-            )
+            print("Failed to create a commit")
+            response.raise_for_status()
 
         results = response.json()
 
@@ -368,9 +366,8 @@ class GitHubPublisher(guru.PublisherFolders):
         )
 
         if not response.ok:
-            raise Exception(
-                f"Failed to update reference. Reason: {response.reason} ({response.status_code})."
-            )
+            print("Failed to update reference")
+            response.raise_for_status()
 
         # Clear repository content cache
         self.get_repository_content.cache_clear()
@@ -420,10 +417,8 @@ class GitHubPublisher(guru.PublisherFolders):
 
         content_response = self.get_repository_content(new_path)
         if not content_response.ok:
-            raise Exception(
-                f"Failed to get external metadata for renamed file. \
-                Reason: {content_response.reason} ({content_response.status_code})."
-            )
+            print("Failed to get external metadata for renamed file")
+            content_response.raise_for_status()
 
         self.update_external_metadata(guru_id, content_response.json())
 
