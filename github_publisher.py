@@ -26,6 +26,9 @@ class GitHubPublisher(guru.PublisherFolders):
         # self.dry_run = True
 
     def get_headers(self, media_type="application/vnd.github+json"):
+        """
+        Get the headers for a GitHub API request.
+        """
         headers = {
             "Accept": media_type,
             "Authorization": f"Bearer {environ['GITHUB_TOKEN']}",
