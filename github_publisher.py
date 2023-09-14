@@ -487,7 +487,7 @@ class GitHubPublisher(guru.PublisherFolders):
 
             if rename_response.ok:
                 # Replace old collection path with new collection path in metadata file
-                for guru_id, metadata in self._PublisherFolders__metadata.items():
+                for _guru_id, metadata in self._PublisherFolders__metadata.items():
                     if metadata.get("external_path"):
                         metadata["external_path"] = metadata["external_path"].replace(
                             f"{old_collection_path}/",
@@ -588,7 +588,7 @@ class GitHubPublisher(guru.PublisherFolders):
 
             if rename_response.ok:
                 # Replace old folder path with new folder path in metadata file
-                for guru_id, metadata in self._PublisherFolders__metadata.items():
+                for _guru_id, metadata in self._PublisherFolders__metadata.items():
                     if metadata.get("external_path"):
                         metadata["external_path"] = metadata["external_path"].replace(
                             f"{old_folder_path}/",
