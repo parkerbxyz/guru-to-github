@@ -21,6 +21,8 @@ runs:
       run: |
         git config user.name "github-actions[bot]"
         git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      with:
+        lfs: true
     - name: Install pipenv
       shell: bash
       run: pip install --user pipenv
