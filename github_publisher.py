@@ -542,7 +542,6 @@ class GitHubPublisher(guru.PublisherFolders):
         function to create the folder. Since Git doesn't track empty
         directories, this function has been left unimplemented.
         """
-        pass
 
     def update_external_folder(
         self, external_id, folder: guru.Folder, collection: guru.Collection
@@ -609,7 +608,6 @@ class GitHubPublisher(guru.PublisherFolders):
         """
         This is not implemented because Git doesn't track directories.
         """
-        pass
 
     def find_external_card(self, card):
         """
