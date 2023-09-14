@@ -357,7 +357,6 @@ class GitHubPublisher(guru.PublisherFolders):
         """
         github_api_url = environ["GITHUB_API_URL"]
         repository = environ["GITHUB_REPOSITORY"]
-        # url = f"{github_api_url}/repos/{repository}/git/refs/{ref}"
         url = f"{github_api_url}/repos/{repository}/git/{ref}"
 
         data = {
@@ -624,12 +623,6 @@ class GitHubPublisher(guru.PublisherFolders):
             external_id = self.generate_external_id(card.id, response.json())
             return external_id
 
-        # # Find card by name
-        # tree = self.get_a_tree(self.get_a_commit_sha(environ["GITHUB_REF_NAME"]), recursive=True)
-        # files = [item for item in tree["tree"] if item["type"] == "blob"]
-        # card_name = f"{self.slugify(card.title)}.md"
-        # matching_file = next((file for file in files if file["path"] == card_name), None)
-
     def convert_card_content(self, card: guru.Card):
         """
         Convert card content to be more GitHub-flavored Markdown friendly.
@@ -652,11 +645,6 @@ class GitHubPublisher(guru.PublisherFolders):
 
         NOTE: Pass only a folder or collection. Logic will default to collection first.
         """
-        # This method has to return the external_id of the new card. We need
-        # to remember the path that's associated with each Guru card so
-        # the next time we publish this card we can make the 'update' call to
-        # GitHub to update this particular document.
-
         card_path = self.get_external_card_path(card)
         name = path.basename(card_path)
         content = self.convert_card_content(card)
