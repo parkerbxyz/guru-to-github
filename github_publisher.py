@@ -4,7 +4,7 @@ Sync card content from Guru to a GitHub repository.
 
 import base64
 import re
-import subprocess
+import subprocess  # nosec B404
 import time
 import uuid
 from functools import lru_cache
@@ -646,10 +646,10 @@ class GitHubPublisher(guru.PublisherFolders):
             image.attrs["src"] = image_relative_path
 
             # Ensure the file extension is tracked by Git LFS
-            subprocess.run(["git", "lfs", "track", f"*{file_extension}"], check=True)
+            subprocess.run(["/usr/bin/git", "lfs", "track", f"*{file_extension}"], check=True)  # nosec B603
 
             # Stage the file for commit
-            subprocess.run(["git", "add", image_absolute_path], check=True)
+            subprocess.run(["/usr/bin/git", "add", image_absolute_path], check=True)  # nosec B603
 
         # Add a title to the content that links to the card in Guru
         return f"# [{card.title}]({card.url})\n\n{content.prettify()}"
