@@ -16,6 +16,13 @@ runs:
   using: "composite"
   steps:
     - uses: actions/checkout@v3
+    - name: git config user
+      shell: bash
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      with:
+        lfs: true
     - name: Install pipenv
       shell: bash
       run: pip install --user pipenv
@@ -37,6 +44,11 @@ runs:
     - name: Pull changes from sync so we can update the metadata file
       shell: bash
       run: git pull
+    - uses: stefanzweifel/git-auto-commit-action@3ea6ae190baf489ba007f7c92608f33ce20ef04a # v4.16.0
+      with:
+        file_pattern: ".gitattributes **/resources/*"
+        commit_message: "Update resources"
+        commit_author: "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
     - uses: stefanzweifel/git-auto-commit-action@3ea6ae190baf489ba007f7c92608f33ce20ef04a # v4.16.0
       with:
         file_pattern: "*GitHubPublisher.json"
