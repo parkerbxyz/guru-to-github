@@ -5,7 +5,18 @@ updates:
     directory: "/"
     schedule:
       interval: "monthly"
+    groups:
+      production-dependencies:
+        dependency-type: "production"
+      development-dependencies:
+        dependency-type: "development"
+    commit-message:
+      prefix: "fix"
+      prefix-development: "build"
+      include: "scope"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "monthly"
+    commit-message:
+      prefix: "fix"
