@@ -652,10 +652,14 @@ class GitHubPublisher(guru.PublisherFolders):
             image.attrs["src"] = image_relative_path
 
             # Ensure the file extension is tracked by Git LFS
-            subprocess.run(["/usr/bin/git", "lfs", "track", f"*{file_extension}"], check=True)  # nosec B603
+            subprocess.run(
+                ["/usr/bin/git", "lfs", "track", f"*{file_extension}"], check=True
+            )  # nosec B603
 
             # Stage the file for commit
-            subprocess.run(["/usr/bin/git", "add", image_absolute_path], check=True)  # nosec B603
+            subprocess.run(
+                ["/usr/bin/git", "add", image_absolute_path], check=True
+            )  # nosec B603
 
         # Add a title to the content that links to the card in Guru
         return f"# [{card.title}]({card.url})\n\n{content.prettify()}"
