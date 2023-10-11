@@ -201,17 +201,17 @@ class GitHubPublisher(guru.PublisherFolders):
         This builds the path for a folder in the GitHub repository.
         """
         # Ensure we have the full folder object
-        folder: guru.Folder = source.get_folder(folder.id)
+        full_folder: guru.Folder = source.get_folder(folder.id)
         # folder: guru.Folder = guru.Guru.get_folder(folder.id)
 
-        collection_home_folder: guru.Folder = folder.get_home()
-        collection_path: str = self.get_external_collection_path(folder.collection)
+        collection_home_folder: guru.Folder = full_folder.get_home()
+        collection_path: str = self.get_external_collection_path(full_folder.collection)
 
-        if folder.id == collection_home_folder.id:
+        if full_folder.id == collection_home_folder.id:
             return collection_path
 
-        folder_path: str = folder.title.rstrip()
-        parent_folder: guru.Folder = folder.get_parent()
+        folder_path: str = full_folder.title.rstrip()
+        parent_folder: guru.Folder = full_folder.get_parent()
 
         # Get path by recursively prefixing parent folders to the path
         while parent_folder.id != collection_home_folder.id:
@@ -628,11 +628,17 @@ class GitHubPublisher(guru.PublisherFolders):
 
         # Replace iframes with links to their source
         for iframe in content.select("iframe"):
-            iframe.replace_with(iframe.attrs.get("src"))
+            src = iframe.attrs.get("src")
+            if src is not None:
+                iframe.replace_with(src)
 
         # Download images and replace image URLs with local file paths
         for image in content.select("img"):
             filename = image.attrs.get("data-ghq-card-content-image-filename")
+            # We expect all images to have a filename
+            if filename is None:
+                # Skip images that don't have a filename
+                continue
             file_extension = path.splitext(filename)[1]
 
             collection_path: str = self.get_external_collection_path(card.collection)
@@ -646,10 +652,14 @@ class GitHubPublisher(guru.PublisherFolders):
             image.attrs["src"] = image_relative_path
 
             # Ensure the file extension is tracked by Git LFS
-            subprocess.run(["/usr/bin/git", "lfs", "track", f"*{file_extension}"], check=True)  # nosec B603
+            subprocess.run(
+                ["/usr/bin/git", "lfs", "track", f"*{file_extension}"], check=True
+            )  # nosec B603
 
             # Stage the file for commit
-            subprocess.run(["/usr/bin/git", "add", image_absolute_path], check=True)  # nosec B603
+            subprocess.run(
+                ["/usr/bin/git", "add", image_absolute_path], check=True
+            )  # nosec B603
 
         # Add a title to the content that links to the card in Guru
         return f"# [{card.title}]({card.url})\n\n{content.prettify()}"
