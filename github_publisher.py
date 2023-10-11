@@ -628,7 +628,9 @@ class GitHubPublisher(guru.PublisherFolders):
 
         # Replace iframes with links to their source
         for iframe in content.select("iframe"):
-            iframe.replace_with(iframe.attrs.get("src"))
+            src = iframe.attrs.get("src")
+            if src is not None:
+                iframe.replace_with(src)
 
         # Download images and replace image URLs with local file paths
         for image in content.select("img"):
