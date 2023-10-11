@@ -635,6 +635,10 @@ class GitHubPublisher(guru.PublisherFolders):
         # Download images and replace image URLs with local file paths
         for image in content.select("img"):
             filename = image.attrs.get("data-ghq-card-content-image-filename")
+            # We expect all images to have a filename
+            if filename is None:
+                # Skip images that don't have a filename
+                continue
             file_extension = path.splitext(filename)[1]
 
             collection_path: str = self.get_external_collection_path(card.collection)
