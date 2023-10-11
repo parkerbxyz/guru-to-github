@@ -201,17 +201,17 @@ class GitHubPublisher(guru.PublisherFolders):
         This builds the path for a folder in the GitHub repository.
         """
         # Ensure we have the full folder object
-        folder: guru.Folder = source.get_folder(folder.id)
+        full_folder: guru.Folder = source.get_folder(folder.id)
         # folder: guru.Folder = guru.Guru.get_folder(folder.id)
 
-        collection_home_folder: guru.Folder = folder.get_home()
-        collection_path: str = self.get_external_collection_path(folder.collection)
+        collection_home_folder: guru.Folder = full_folder.get_home()
+        collection_path: str = self.get_external_collection_path(full_folder.collection)
 
-        if folder.id == collection_home_folder.id:
+        if full_folder.id == collection_home_folder.id:
             return collection_path
 
-        folder_path: str = folder.title.rstrip()
-        parent_folder: guru.Folder = folder.get_parent()
+        folder_path: str = full_folder.title.rstrip()
+        parent_folder: guru.Folder = full_folder.get_parent()
 
         # Get path by recursively prefixing parent folders to the path
         while parent_folder.id != collection_home_folder.id:
