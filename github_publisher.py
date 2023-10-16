@@ -4,7 +4,7 @@ Sync card content from Guru to a GitHub repository.
 
 import base64
 import re
-import subprocess
+import subprocess  # nosec B404
 import time
 import uuid
 from functools import lru_cache
@@ -26,6 +26,9 @@ class GitHubPublisher(guru.PublisherFolders):
         super().__init__(source)
 
     def get_headers(self, media_type="application/vnd.github+json"):
+        """
+        Get the headers for a GitHub API request.
+        """
         headers = {
             "Accept": media_type,
             "Authorization": f"Bearer {environ['GITHUB_TOKEN']}",
@@ -71,13 +74,13 @@ class GitHubPublisher(guru.PublisherFolders):
         metadata["external_url"] = response_json["html_url"]
 
     @lru_cache
-    def get_repository_content(self, path=""):
+    def get_repository_content(self, file_path=""):
         """
         Get the contents of a file or directory in a GitHub repository.
         """
         github_api_url = environ["GITHUB_API_URL"]
         repository = environ["GITHUB_REPOSITORY"]
-        url = f"{github_api_url}/repos/{repository}/contents/{path}"
+        url = f"{github_api_url}/repos/{repository}/contents/{file_path}"
 
         response = requests.get(
             url,
@@ -90,21 +93,21 @@ class GitHubPublisher(guru.PublisherFolders):
 
         return response
 
-    def delete_a_file(self, path: str, commit_message: str, sha: str):
+    def delete_a_file(self, file_path: str, commit_message: str, sha: str):
         """
         Delete a file in a GitHub repository.
         Documentation: https://docs.github.com/rest/repos/contents#delete-a-file
         """
         github_api_url = environ["GITHUB_API_URL"]
         repository = environ["GITHUB_REPOSITORY"]
-        url = f"{github_api_url}/repos/{repository}/contents/{path}"
+        url = f"{github_api_url}/repos/{repository}/contents/{file_path}"
         github_ref_name = environ["GITHUB_REF_NAME"]
 
         data = {
             "message": commit_message,
             "sha": sha
             if not None
-            else self.get_repository_content(path).json().get("sha"),
+            else self.get_repository_content(file_path).json().get("sha"),
             "branch": github_ref_name,
         }
 
@@ -113,7 +116,8 @@ class GitHubPublisher(guru.PublisherFolders):
         )
 
         if not response.ok:
-            raise Exception(f"Failed to delete {path}")
+            print(f"Failed to delete {file_path}")
+            response.raise_for_status()
 
         # Clear repository content cache
         self.get_repository_content.cache_clear()
@@ -154,9 +158,8 @@ class GitHubPublisher(guru.PublisherFolders):
         response = session.post(url, json=data, headers=self.get_headers(), timeout=20)
 
         if not response.ok:
-            raise Exception(
-                f"Failed to create a tree. Reason: {response.reason} ({response.status_code})."
-            )
+            print("Failed to create a tree")
+            response.raise_for_status()
 
         results = response.json()
 
@@ -197,17 +200,17 @@ class GitHubPublisher(guru.PublisherFolders):
         This builds the path for a folder in the GitHub repository.
         """
         # Ensure we have the full folder object
-        folder: guru.Folder = source.get_folder(folder.id)
+        full_folder: guru.Folder = source.get_folder(folder.id)
         # folder: guru.Folder = guru.Guru.get_folder(folder.id)
 
-        collection_home_folder: guru.Folder = folder.get_home()
-        collection_path: str = self.get_external_collection_path(folder.collection)
+        collection_home_folder: guru.Folder = full_folder.get_home()
+        collection_path: str = self.get_external_collection_path(full_folder.collection)
 
-        if folder.id == collection_home_folder.id:
+        if full_folder.id == collection_home_folder.id:
             return collection_path
 
-        folder_path: str = folder.title.rstrip()
-        parent_folder: guru.Folder = folder.get_parent()
+        folder_path: str = full_folder.title.rstrip()
+        parent_folder: guru.Folder = full_folder.get_parent()
 
         # Get path by recursively prefixing parent folders to the path
         while parent_folder.id != collection_home_folder.id:
@@ -239,7 +242,7 @@ class GitHubPublisher(guru.PublisherFolders):
     def create_or_update_file_contents(
         self,
         guru_id: str,
-        path: str,
+        file_path: str,
         commit_message: str,
         content: str,
         sha="",
@@ -250,21 +253,21 @@ class GitHubPublisher(guru.PublisherFolders):
         """
         github_api_url = environ["GITHUB_API_URL"]
         repository = environ["GITHUB_REPOSITORY"]
-        url = f"{github_api_url}/repos/{repository}/contents/{path}"
+        url = f"{github_api_url}/repos/{repository}/contents/{file_path}"
         github_ref_name = environ["GITHUB_REF_NAME"]
 
-        file_exists = self.get_repository_content(path).ok
+        file_exists = self.get_repository_content(file_path).ok
         if file_exists:
             # SHA is required when updating an existing file
-            sha = sha or self.get_repository_content(path).json().get("sha")
+            sha = sha or self.get_repository_content(file_path).json().get("sha")
 
             # Compare the content of the file in the repository to the content
             # we're trying to publish. If they're the same, don't update the file.
             # This prevents unnecessary commits to the repository.
-            file_content = self.get_repository_content(path).json().get("content")
+            file_content = self.get_repository_content(file_path).json().get("content")
             file_content = str(base64.b64decode(file_content), "utf-8")
             if file_content == content:
-                return self.get_repository_content(path)
+                return self.get_repository_content(file_path)
 
         data = {
             "message": commit_message,
@@ -279,9 +282,8 @@ class GitHubPublisher(guru.PublisherFolders):
         response = requests.put(url, json=data, headers=self.get_headers(), timeout=20)
 
         if not response.ok:
-            raise Exception(
-                f"Failed to create or update file contents. Reason: {response.reason} ({response.status_code})."
-            )
+            print("Failed to create or update file contents")
+            response.raise_for_status()
 
         if response.status_code == 200:  # OK (Updated)
             self.update_external_metadata(guru_id, response.json())
@@ -312,9 +314,8 @@ class GitHubPublisher(guru.PublisherFolders):
         response = requests.post(url, json=data, headers=self.get_headers(), timeout=20)
 
         if not response.ok:
-            raise Exception(
-                f"Failed to create a commit. Reason: {response.reason} ({response.status_code})."
-            )
+            print("Failed to create a commit")
+            response.raise_for_status()
 
         results = response.json()
 
@@ -357,7 +358,6 @@ class GitHubPublisher(guru.PublisherFolders):
         """
         github_api_url = environ["GITHUB_API_URL"]
         repository = environ["GITHUB_REPOSITORY"]
-        # url = f"{github_api_url}/repos/{repository}/git/refs/{ref}"
         url = f"{github_api_url}/repos/{repository}/git/{ref}"
 
         data = {
@@ -369,9 +369,8 @@ class GitHubPublisher(guru.PublisherFolders):
         )
 
         if not response.ok:
-            raise Exception(
-                f"Failed to update reference. Reason: {response.reason} ({response.status_code})."
-            )
+            print("Failed to update reference")
+            response.raise_for_status()
 
         # Clear repository content cache
         self.get_repository_content.cache_clear()
@@ -421,10 +420,8 @@ class GitHubPublisher(guru.PublisherFolders):
 
         content_response = self.get_repository_content(new_path)
         if not content_response.ok:
-            raise Exception(
-                f"Failed to get external metadata for renamed file. \
-                Reason: {content_response.reason} ({content_response.status_code})."
-            )
+            print("Failed to get external metadata for renamed file")
+            content_response.raise_for_status()
 
         self.update_external_metadata(guru_id, content_response.json())
 
@@ -493,7 +490,7 @@ class GitHubPublisher(guru.PublisherFolders):
 
             if rename_response.ok:
                 # Replace old collection path with new collection path in metadata file
-                for guru_id, metadata in self._PublisherFolders__metadata.items():
+                for _guru_id, metadata in self._PublisherFolders__metadata.items():
                     if metadata.get("external_path"):
                         metadata["external_path"] = metadata["external_path"].replace(
                             f"{old_collection_path}/",
@@ -543,7 +540,6 @@ class GitHubPublisher(guru.PublisherFolders):
         function to create the folder. Since Git doesn't track empty
         directories, this function has been left unimplemented.
         """
-        pass
 
     def update_external_folder(
         self, external_id, folder: guru.Folder, collection: guru.Collection
@@ -595,7 +591,7 @@ class GitHubPublisher(guru.PublisherFolders):
 
             if rename_response.ok:
                 # Replace old folder path with new folder path in metadata file
-                for guru_id, metadata in self._PublisherFolders__metadata.items():
+                for _guru_id, metadata in self._PublisherFolders__metadata.items():
                     if metadata.get("external_path"):
                         metadata["external_path"] = metadata["external_path"].replace(
                             f"{old_folder_path}/",
@@ -610,7 +606,6 @@ class GitHubPublisher(guru.PublisherFolders):
         """
         This is not implemented because Git doesn't track directories.
         """
-        pass
 
     def find_external_card(self, card):
         """
@@ -624,12 +619,6 @@ class GitHubPublisher(guru.PublisherFolders):
             external_id = self.generate_external_id(card.id, response.json())
             return external_id
 
-        # # Find card by name
-        # tree = self.get_a_tree(self.get_a_commit_sha(environ["GITHUB_REF_NAME"]), recursive=True)
-        # files = [item for item in tree["tree"] if item["type"] == "blob"]
-        # card_name = f"{self.slugify(card.title)}.md"
-        # matching_file = next((file for file in files if file["path"] == card_name), None)
-
     def convert_card_content(self, card: guru.Card):
         """
         Convert card content to be more GitHub-flavored Markdown friendly.
@@ -638,11 +627,17 @@ class GitHubPublisher(guru.PublisherFolders):
 
         # Replace iframes with links to their source
         for iframe in content.select("iframe"):
-            iframe.replace_with(iframe.attrs.get("src"))
+            src = iframe.attrs.get("src")
+            if src is not None:
+                iframe.replace_with(src)
 
         # Download images and replace image URLs with local file paths
         for image in content.select("img"):
             filename = image.attrs.get("data-ghq-card-content-image-filename")
+            # We expect all images to have a filename
+            if filename is None:
+                # Skip images that don't have a filename
+                continue
             file_extension = path.splitext(filename)[1]
 
             collection_path: str = self.get_external_collection_path(card.collection)
@@ -656,10 +651,14 @@ class GitHubPublisher(guru.PublisherFolders):
             image.attrs["src"] = image_relative_path
 
             # Ensure the file extension is tracked by Git LFS
-            subprocess.run(["git", "lfs", "track", f"*{file_extension}"], check=True)
+            subprocess.run(
+                ["/usr/bin/git", "lfs", "track", f"*{file_extension}"], check=True
+            )  # nosec B603
 
             # Stage the file for commit
-            subprocess.run(["git", "add", image_absolute_path], check=True)
+            subprocess.run(
+                ["/usr/bin/git", "add", image_absolute_path], check=True
+            )  # nosec B603
 
         # Add a title to the content that links to the card in Guru
         return f"# [{card.title}]({card.url})\n\n{content.prettify()}"
@@ -673,11 +672,6 @@ class GitHubPublisher(guru.PublisherFolders):
 
         NOTE: Pass only a folder or collection. Logic will default to collection first.
         """
-        # This method has to return the external_id of the new card. We need
-        # to remember the path that's associated with each Guru card so
-        # the next time we publish this card we can make the 'update' call to
-        # GitHub to update this particular document.
-
         card_path = self.get_external_card_path(card)
         name = path.basename(card_path)
         content = self.convert_card_content(card)

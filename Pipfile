@@ -9,6 +9,10 @@ ghapi = "*"
 pytest = "*"
 
 [dev-packages]
+types-beautifulsoup4 = "*"
+mypy = "*"
+bandit = "*"
+types-requests = "*"
 
 [requires]
 python_version = "3.11"
