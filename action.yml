@@ -54,6 +54,7 @@ runs:
     - name: List all changed files tracked and untracked files
       run: |
         echo "Changed files: ${{ steps.verify-changed-files.outputs.changed_files }}"
+      shell: bash
     - uses: stefanzweifel/git-auto-commit-action@8756aa072ef5b4a080af5dc8fef36c5d586e521d # v5.0.0
       with:
         file_pattern: ".gitattributes ${{ inputs.working_directory_path }}/**/resources/*"
