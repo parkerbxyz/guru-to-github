@@ -8,7 +8,7 @@ inputs:
   guru_collection_id:
     description: "ID of the Guru collection to sync"
     required: true
-  working_directory_path:
+  collection_directory_path:
     description: "Path to the directory where the collection and metadata file should be synced to"
     required: true
 
@@ -36,9 +36,9 @@ runs:
         PIPENV_PIPFILE: ${{ github.action_path }}/Pipfile
     - name: Create the working directory if it doesn't exist
       shell: bash
-      run: mkdir -p  ${{ inputs.working_directory_path }}
+      run: mkdir -p  ${{ inputs.collection_directory_path }}
     - name: Sync collection
-      working-directory: ${{ inputs.working_directory_path }}
+      working-directory: ${{ inputs.collection_directory_path }}
       shell: bash
       run: pipenv run python ${{ github.action_path }}/github_publisher.py
       env:
@@ -51,19 +51,19 @@ runs:
       uses: tj-actions/verify-changed-files@54e20d3c522fbeed99ebaf2e38a1eb33214c58ba # v16.1.1
       id: verify-changed-files
     - name: Move .gitattributes file to the root directory if it is in the working directory
-      if: contains(steps.verify-changed-files.outputs.changed_files, '${{ inputs.working_directory_path }}/.gitattributes')
+      if: contains(steps.verify-changed-files.outputs.changed_files, '${{ inputs.collection_directory_path }}/.gitattributes')
       shell: bash
       run: |
-        mv -n ${{ inputs.working_directory_path }}/.gitattributes .
+        mv -n ${{ inputs.collection_directory_path }}/.gitattributes .
         git add .gitattributes
         git commit -m "Create .gitattributes"
     - uses: stefanzweifel/git-auto-commit-action@8756aa072ef5b4a080af5dc8fef36c5d586e521d # v5.0.0
       with:
-        file_pattern: ".gitattributes ${{ inputs.working_directory_path }}/**/resources/*"
+        file_pattern: ".gitattributes ${{ inputs.collection_directory_path }}/**/resources/*"
         commit_message: "Update resources"
         commit_author: "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
     - uses: stefanzweifel/git-auto-commit-action@3ea6ae190baf489ba007f7c92608f33ce20ef04a # v4.16.0
       with:
-        file_pattern: "${{ inputs.working_directory_path }}/GitHubPublisher.json"
+        file_pattern: "${{ inputs.collection_directory_path }}/GitHubPublisher.json"
         commit_message: "Update GitHubPublisher.json"
         commit_author: "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"

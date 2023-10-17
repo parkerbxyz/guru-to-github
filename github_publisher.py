@@ -188,7 +188,10 @@ class GitHubPublisher(guru.PublisherFolders):
         """
         This builds the path to a collection directory in the GitHub repository.
         """
-        collection_path = f"{collection.name}".rstrip()
+        external_collection_directory_path = environ["COLLECTION_DIRECTORY_PATH"]
+        collection_path = (
+            f"{external_collection_directory_path}/{collection.name}".rstrip()
+        )
         return collection_path
 
     @lru_cache
