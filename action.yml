@@ -53,9 +53,7 @@ runs:
     - name: Move .gitattributes file to the root directory
       if: contains(steps.verify-changed-files.outputs.changed_files, '${{ inputs.working_directory_path }}/.gitattributes')
       shell: bash
-      run: |
-        ROOT_DIRECTORY=$(git rev-parse --show-toplevel)
-        mv -n "$ROOT_DIRECTORY"/.gitattributes
+      run: mv -n ${{ inputs.working_directory_path }}/.gitattributes .
     - uses: stefanzweifel/git-auto-commit-action@8756aa072ef5b4a080af5dc8fef36c5d586e521d # v5.0.0
       with:
         file_pattern: ".gitattributes ${{ inputs.working_directory_path }}/**/resources/*"
