@@ -641,15 +641,17 @@ class GitHubPublisher(guru.PublisherFolders):
                 continue
             file_extension = path.splitext(filename)[1]
 
-            collection_path: str = self.get_external_collection_path(card.collection)
+            collection_name = f"{card.collection.name}".rstrip()
+            collection_path = self.get_external_collection_path(card.collection)
             image_relative_path = f"resources/{filename}"
             image_absolute_path = f"{collection_path}/{image_relative_path}"
+            image_download_path = f"{collection_name}/{image_relative_path}"
             guru.download_file(
                 image.attrs.get("src"),
-                image_absolute_path,
+                image_download_path,
                 headers={"Authorization": source._Guru__get_basic_auth_value()},
             )
-            image.attrs["src"] = image_relative_path
+            image.attrs["src"] = f"/{image_absolute_path}"
 
             # Ensure the file extension is tracked by Git LFS
             subprocess.run(
@@ -658,7 +660,7 @@ class GitHubPublisher(guru.PublisherFolders):
 
             # Stage the file for commit
             subprocess.run(
-                ["/usr/bin/git", "add", image_absolute_path], check=True
+                ["/usr/bin/git", "add", image_download_path], check=True
             )  # nosec B603
 
         # Add a title to the content that links to the card in Guru
