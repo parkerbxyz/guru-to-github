@@ -51,7 +51,7 @@ runs:
       uses: tj-actions/verify-changed-files@54e20d3c522fbeed99ebaf2e38a1eb33214c58ba # v16.1.1
       id: verify-changed-files
     - name: Move .gitattributes file to the root directory
-      if: contains(steps.verify-changed-files.outputs.changed_files, inputs.working_directory_path/.gitattributes)
+      if: contains(steps.verify-changed-files.outputs.changed_files, inputs.working_directory_path + '.gitattributes')
       shell: bash
       run: |
         ROOT_DIRECTORY=$(git rev-parse --show-toplevel)
