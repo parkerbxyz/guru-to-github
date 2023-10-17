@@ -38,6 +38,7 @@ runs:
       shell: bash
     - name: Sync collection
       shell: bash
+      working-directory: ${{ inputs.collection_directory_path }}
       run: pipenv run python ${{ github.action_path }}/github_publisher.py
       env:
         PIPENV_PIPFILE: ${{ github.action_path }}/Pipfile
