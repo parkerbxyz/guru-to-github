@@ -9,7 +9,7 @@ inputs:
     description: "ID of the Guru collection to sync"
     required: true
   collection_directory_path:
-    description: "Path to the directory where the collection should be synced to"
+    description: "Path to the directory where the collection and metadata file should be synced to"
     required: true
 
 runs:
@@ -34,7 +34,13 @@ runs:
       run: pipenv install
       env:
         PIPENV_PIPFILE: ${{ github.action_path }}/Pipfile
+    # Create the collection directory so we can use it as the working directory
+    # This allows us to keep the metadata file in the same directory as the collection(s)
+    - name: Create the collection directory if it does not exist
+      shell: bash
+      run: mkdir -p  ${{ inputs.collection_directory_path }}
     - name: Sync collection
+      working-directory: ${{ inputs.collection_directory_path }}
       shell: bash
       run: pipenv run python ${{ github.action_path }}/github_publisher.py
       env:
@@ -51,6 +57,6 @@ runs:
         commit_author: "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
     - uses: stefanzweifel/git-auto-commit-action@8756aa072ef5b4a080af5dc8fef36c5d586e521d # v5.0.0
       with:
-        file_pattern: "*GitHubPublisher.json"
+        file_pattern: "${{ inputs.collection_directory_path }}/GitHubPublisher.json"
         commit_message: "Update GitHubPublisher.json"
         commit_author: "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
