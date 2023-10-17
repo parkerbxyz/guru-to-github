@@ -34,6 +34,8 @@ runs:
       run: pipenv install
       env:
         PIPENV_PIPFILE: ${{ github.action_path }}/Pipfile
+    - run: cd ${{ inputs.collection_directory_path }}
+      shell: bash
     - name: Sync collection
       shell: bash
       run: pipenv run python ${{ github.action_path }}/github_publisher.py
