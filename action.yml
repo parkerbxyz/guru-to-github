@@ -34,17 +34,16 @@ runs:
       run: pipenv install
       env:
         PIPENV_PIPFILE: ${{ github.action_path }}/Pipfile
-    # Create the working directory if it doesn't exist
-    - run: mkdir -p  ${{ inputs.working_directory_path }}
+    - name: Create the working directory if it doesn't exist
       shell: bash
+      run: mkdir -p  ${{ inputs.working_directory_path }}
     - name: Sync collection
-      shell: bash
       working-directory: ${{ inputs.working_directory_path }}
+      shell: bash
       run: pipenv run python ${{ github.action_path }}/github_publisher.py
       env:
         PIPENV_PIPFILE: ${{ github.action_path }}/Pipfile
         GURU_COLLECTION_ID: ${{ inputs.guru_collection_id }}
-        COLLECTION_DIRECTORY_PATH: ${{ inputs.working_directory_path }}
     - name: Pull changes from sync so we can update the metadata file
       shell: bash
       run: git pull
