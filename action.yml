@@ -51,16 +51,9 @@ runs:
     - name: Verify changed files
       uses: tj-actions/verify-changed-files@54e20d3c522fbeed99ebaf2e38a1eb33214c58ba # v16.1.1
       id: verify-changed-files
-    - name: Move .gitattributes file to the root directory if it is in the working directory
-      if: contains(steps.verify-changed-files.outputs.changed_files, '${{ inputs.collection_directory_path }}/.gitattributes')
-      shell: bash
-      run: |
-        mv -n ${{ inputs.collection_directory_path }}/.gitattributes .
-        git add .gitattributes
-        git commit -m "Create .gitattributes"
     - uses: stefanzweifel/git-auto-commit-action@8756aa072ef5b4a080af5dc8fef36c5d586e521d # v5.0.0
       with:
-        file_pattern: ".gitattributes ${{ inputs.collection_directory_path }}/**/resources/*"
+        file_pattern: "${{ inputs.collection_directory_path }}/**/resources/*"
         commit_message: "Update resources"
         commit_author: "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
     - uses: stefanzweifel/git-auto-commit-action@3ea6ae190baf489ba007f7c92608f33ce20ef04a # v4.16.0
