@@ -44,6 +44,7 @@ runs:
       env:
         PIPENV_PIPFILE: ${{ github.action_path }}/Pipfile
         GURU_COLLECTION_ID: ${{ inputs.guru_collection_id }}
+        COLLECTION_DIRECTORY_PATH: ${{ inputs.collection_directory_path }}
     - name: Pull changes from sync so we can update the metadata file
       shell: bash
       run: git pull
