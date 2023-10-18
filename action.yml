@@ -50,7 +50,7 @@ runs:
     - name: Pull changes from sync so we can update the metadata file
       if: ${{ !env.DRY_RUN }}
       shell: bash
-      run: git pull
+      run: git pull --rebase
     - uses: stefanzweifel/git-auto-commit-action@8756aa072ef5b4a080af5dc8fef36c5d586e521d # v5.0.0
       if: ${{ !env.DRY_RUN }}
       with:
