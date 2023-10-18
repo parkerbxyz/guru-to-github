@@ -24,9 +24,9 @@ class GitHubPublisher(guru.PublisherFolders):
 
     def __init__(self, source):
         super().__init__(source)
-        if environ.get("PUBLISH_UNVERIFIED_CARDS") is True:
+        if environ.get("PUBLISH_UNVERIFIED_CARDS"):
             self.skip_unverified_cards = False
-        if environ.get("DRY_RUN") is True:
+        if environ.get("DRY_RUN"):
             self.dry_run = True
 
     def get_headers(self, media_type="application/vnd.github+json"):
