@@ -45,9 +45,6 @@ runs:
     - name: Create the collection directory if it does not exist
       shell: bash
       run: mkdir -p  ${{ inputs.collection_directory_path }}
-    - run: git pull
-      if: ${{ !inputs.dry_run }}
-      shell: bash
     - name: Sync collection
       working-directory: ${{ inputs.collection_directory_path }}
       shell: bash
