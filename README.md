@@ -28,6 +28,8 @@ This action publishes a Guru Collection to a directory in a GitHub repository, c
 
   Each action (file creation, update, rename, and deletion) will be committed separately.
 
+- Unverified Guru Cards will not be published to GitHub. If a Card that was previously published to GitHub becomes unverified, the corresponding Markdown file will not be deleted, but it will not be updated until the Card is verified.
+
 **Limitations:**
 
 - Cards in Guru can live in multiple folders. This action will only create a file for the first folder that the card is found in.
