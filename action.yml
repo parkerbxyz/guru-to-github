@@ -11,6 +11,9 @@ inputs:
   collection_directory_path:
     description: "Path to the directory where the Collection and metadata file should be synced to"
     required: true
+  publish_unverified_cards:
+    description: "Publish unverified Guru Cards to GitHub"
+    required: false
 
 runs:
   using: "composite"
