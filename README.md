@@ -117,3 +117,7 @@ Each Collection will exist as a subdirectory in the directory specified by `coll
 
 > [!NOTE]
 > If a Card that was previously published to GitHub becomes unverified, the corresponding Markdown file will not be deleted. However, it will not be updated until the Card is verified.
+
+### `DRY_RUN`
+
+**Optional:** If truthy, the action will run without publishing any Guru Cards. This can be useful for testing.
