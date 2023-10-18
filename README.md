@@ -103,13 +103,23 @@ Each Collection will exist as a subdirectory in the directory specified by `coll
 
 **Required:** The path to the directory in the GitHub repository where the Guru Collection will be published.
 
-### `publish_unverified_cards`
+## Environment variables
+
+### `GURU_USER_EMAIL`
+
+**Required:** The email address of the Guru user to use for API requests.
+
+### `GURU_USER_TOKEN`
+
+**Required:** The API token of the Guru user to use for API requests.
+
+### `PUBLISH_UNVERIFIED_CARDS`
 
 **Optional:** If truthy, unverified Guru Cards will be published to GitHub.
 
 > [!NOTE]
 > If a Card that was previously published to GitHub becomes unverified, the corresponding Markdown file will not be deleted. However, it will not be updated until the Card is verified.
 
-### `dry_run`
+### `DRY_RUN`
 
-**Optional:** If truthy, the action will run without publishing any cards. This can be useful for testing.
+**Optional:** If truthy, the action will run without publishing any Guru Cards. This can be useful for testing.
