@@ -34,7 +34,9 @@ runs:
       run: pipenv install
       env:
         PIPENV_PIPFILE: ${{ github.action_path }}/Pipfile
-    - name: Create the working directory if it doesn't exist
+    # Create the collection directory so we can use it as the working directory
+    # This allows us to keep the metadata file in the same directory as the collection(s)
+    - name: Create the collection directory if it does not exist
       shell: bash
       run: mkdir -p  ${{ inputs.collection_directory_path }}
     - name: Sync collection
