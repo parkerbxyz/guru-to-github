@@ -28,8 +28,6 @@ This action publishes a Guru Collection to a directory in a GitHub repository, c
 
   Each action (file creation, update, rename, and deletion) will be committed separately.
 
-- Unverified Guru Cards will not be published to GitHub. If a Card that was previously published to GitHub becomes unverified, the corresponding Markdown file will not be deleted, but it will not be updated until the Card is verified.
-
 **Limitations:**
 
 - Cards in Guru can live in multiple folders. This action will only create a file for the first folder that the card is found in.
@@ -92,3 +90,30 @@ jobs:
 ```
 
 Each Collection will exist as a subdirectory in the directory specified by `collection_directory_path`.
+
+## Inputs
+
+### `guru_collection_id`
+
+**Required:** The ID of the Guru Collection to sync.
+
+### `collection_directory_path`
+
+**Required:** The path to the directory in the GitHub repository where the Guru Collection will be published.
+
+## Environment variables
+
+### `GURU_USER_EMAIL`
+
+**Required:** The email address of the Guru user to use for API requests.
+
+### `GURU_USER_TOKEN`
+
+**Required:** The API token of the Guru user to use for API requests.
+
+### `PUBLISH_UNVERIFIED_CARDS`
+
+**Optional:** If truthy, unverified Guru Cards will be published to GitHub.
+
+> [!NOTE]
+> If a Card that was previously published to GitHub becomes unverified, the corresponding Markdown file will not be deleted. However, it will not be updated until the Card is verified.
