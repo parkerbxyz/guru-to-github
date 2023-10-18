@@ -39,6 +39,9 @@ runs:
     - name: Create the collection directory if it does not exist
       shell: bash
       run: mkdir -p  ${{ inputs.collection_directory_path }}
+    - run: git pull
+      if: ${{ !env.DRY_RUN }}
+      shell: bash
     - name: Sync collection
       working-directory: ${{ inputs.collection_directory_path }}
       shell: bash
@@ -50,7 +53,7 @@ runs:
     - name: Pull changes from sync so we can update the metadata file
       if: ${{ !env.DRY_RUN }}
       shell: bash
-      run: git add -A && git pull --rebase
+      run: git pull
     - uses: stefanzweifel/git-auto-commit-action@8756aa072ef5b4a080af5dc8fef36c5d586e521d # v5.0.0
       if: ${{ !env.DRY_RUN }}
       with:
