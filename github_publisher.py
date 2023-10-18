@@ -761,10 +761,11 @@ class GitHubPublisher(guru.PublisherFolders):
         return external_card_response
 
     def delete_external_card(self, external_id):
-        # If we want to automatically delete Markdown documents when their
-        # corresponding Guru cards are archived, we could implement that here.
-        card_name = external_id["name"]
-        card_path = external_id["path"]
+        """
+        Delete Markdown documents when their corresponding Guru Cards are archived.
+        """
+        card_name = external_id["external_name"]
+        card_path = external_id["external_path"]
         card_sha = self.get_repository_content(card_path).json().get("sha")
         return self.delete_a_file(card_path, f"Delete {card_name}", card_sha)
 
