@@ -764,9 +764,11 @@ class GitHubPublisher(guru.PublisherFolders):
         """
         Delete Markdown documents when their corresponding Guru Cards are archived.
         """
-        card_name = external_id.get("external_name")
-        card_path = external_id.get("external_path")
-        card_sha = self.get_repository_content(card_path).json().get("sha")
+        guru_id = self.get_guru_id(external_id)
+        card_name = self.get_metadata(guru_id)["external_name"]
+        card_path = self.get_metadata(guru_id)["external_path"]
+        card_sha = self.get_metadata(guru_id)["external_sha"]
+        # card_sha = self.get_repository_content(card_path).json().get("sha")
         return self.delete_a_file(card_path, f"Delete {card_name}", card_sha)
 
 
