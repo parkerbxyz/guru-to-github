@@ -76,6 +76,8 @@ jobs:
   guru-to-github:
     runs-on: ubuntu-latest
     strategy:
+      # Sync one Collection at a time to avoid conflicting changes to the metadata file
+      max-parallel: 1
       matrix:
         guru_collection_id: [123ab, 456cd]
     steps:
