@@ -14,6 +14,9 @@ inputs:
   publish_unverified_cards:
     description: "Publish unverified Guru Cards to GitHub"
     required: false
+  dry_run:
+    description: "Run the action without publishing any cards (useful for testing)"
+    required: false
 
 runs:
   using: "composite"
