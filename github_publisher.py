@@ -15,7 +15,6 @@ import guru
 import requests
 from bs4 import BeautifulSoup
 from requests.adapters import HTTPAdapter, Retry
-from requests_toolbelt.utils import dump
 
 
 class GitHubPublisher(guru.PublisherFolders):
@@ -288,7 +287,7 @@ class GitHubPublisher(guru.PublisherFolders):
 
         if not response.ok:
             print("Failed to create or update file contents")
-            print(dump.dump_all(response).decode('utf-8'))
+            print(response.json().get("message"))
             response.raise_for_status()
 
         if response.status_code == 200:  # OK (Updated)
