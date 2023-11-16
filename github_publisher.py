@@ -121,6 +121,7 @@ class GitHubPublisher(guru.PublisherFolders):
 
         if not response.ok:
             print(f"Failed to delete {file_path}")
+            print(response.json().get("message"))
             response.raise_for_status()
 
         # Clear repository content cache
@@ -163,6 +164,7 @@ class GitHubPublisher(guru.PublisherFolders):
 
         if not response.ok:
             print("Failed to create a tree")
+            print(response.json().get("message"))
             response.raise_for_status()
 
         results = response.json()
@@ -287,6 +289,7 @@ class GitHubPublisher(guru.PublisherFolders):
 
         if not response.ok:
             print("Failed to create or update file contents")
+            print(response.json().get("message"))
             response.raise_for_status()
 
         if response.status_code == 200:  # OK (Updated)
@@ -319,6 +322,7 @@ class GitHubPublisher(guru.PublisherFolders):
 
         if not response.ok:
             print("Failed to create a commit")
+            print(response.json().get("message"))
             response.raise_for_status()
 
         results = response.json()
@@ -374,6 +378,7 @@ class GitHubPublisher(guru.PublisherFolders):
 
         if not response.ok:
             print("Failed to update reference")
+            print(response.json().get("message"))
             response.raise_for_status()
 
         # Clear repository content cache
@@ -425,6 +430,7 @@ class GitHubPublisher(guru.PublisherFolders):
         content_response = self.get_repository_content(new_path)
         if not content_response.ok:
             print("Failed to get external metadata for renamed file")
+            print(content_response.json().get("message"))
             content_response.raise_for_status()
 
         self.update_external_metadata(guru_id, content_response.json())
