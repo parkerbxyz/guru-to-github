@@ -18,7 +18,6 @@ runs:
     - uses: actions/checkout@v4
       with:
         lfs: true
-        token: ${{ env.GITHUB_TOKEN }} || ${{ secrets.GITHUB_TOKEN }}
     - name: git config user
       shell: bash
       run: |
