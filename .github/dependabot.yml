@@ -19,4 +19,4 @@ updates:
     schedule:
       interval: "monthly"
     commit-message:
-      prefix: "fix"
+      prefix: "ci"
