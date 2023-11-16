@@ -7,6 +7,7 @@ name = "pypi"
 guru = {ref = "6c864e1", git = "https://github.com/guruhq/py-sdk.git"}
 ghapi = "*"
 pytest = "*"
+requests-toolbelt = "*"
 
 [dev-packages]
 types-beautifulsoup4 = "*"
