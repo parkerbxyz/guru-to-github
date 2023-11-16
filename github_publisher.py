@@ -287,6 +287,7 @@ class GitHubPublisher(guru.PublisherFolders):
 
         if not response.ok:
             print("Failed to create or update file contents")
+            print(f"Failed request: {response.request}")
             response.raise_for_status()
 
         if response.status_code == 200:  # OK (Updated)
