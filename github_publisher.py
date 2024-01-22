@@ -421,7 +421,8 @@ class GitHubPublisher(guru.PublisherFolders):
 
         update_a_reference_response = self.update_a_reference(github_ref, commit_sha)
 
-        if self.get_type(guru_id) == "collection":
+        guru_object_type = self.get_type(guru_id)
+        if guru_object_type == "collection":
             new_path = f"{new_path}/README.md"
 
         # Wait a second for the reference to be updated
@@ -429,11 +430,7 @@ class GitHubPublisher(guru.PublisherFolders):
 
         content_response = self.get_repository_content(new_path)
         if not content_response.ok:
-            print(
-                f"""Failed to get external metadata for renamed file
-                  Old path: {old_path}
-                  New path: {new_path}"""
-            )
+            print(f"Failed to get external metadata for renamed {guru_object_type}")
             print(content_response.json().get("message"))
             content_response.raise_for_status()
 
