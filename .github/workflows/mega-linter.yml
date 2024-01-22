@@ -37,7 +37,7 @@ jobs:
       - name: MegaLinter
         id: ml
         # More info at https://megalinter.io/latest/flavors/
-        uses: oxsecurity/megalinter/flavors/python@a87b2872713c6bdde46d2473c5d7ed23e5752dc2 # v7.4.0
+        uses: oxsecurity/megalinter/flavors/python@7e042c726c68415475b05a65a686c612120a1232 # v7.7.0
         env:
           # All available variables are described in documentation
           # https://megalinter.io/latest/configuration/
@@ -48,7 +48,7 @@ jobs:
       # Upload MegaLinter artifacts
       - name: Archive production artifacts
         if: success()|| failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: MegaLinter reports
           path: |

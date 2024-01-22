@@ -15,9 +15,13 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - run: echo "GITHUB_TOKEN=${{ github.token }}" >> $GITHUB_ENV
+      if: ${{ !env.GITHUB_TOKEN }}
+      shell: bash
     - uses: actions/checkout@v4
       with:
         lfs: true
+        token: ${{ env.GITHUB_TOKEN }}
     - name: git config user
       shell: bash
       run: |
@@ -26,7 +30,7 @@ runs:
     - name: Install pipenv
       shell: bash
       run: pip install --user pipenv
-    - uses: actions/setup-python@v4
+    - uses: actions/setup-python@v5
       with:
         python-version-file: "${{ github.action_path }}/.python-version"
     - name: Install dependencies
@@ -51,17 +55,17 @@ runs:
         GURU_COLLECTION_ID: ${{ inputs.guru_collection_id }}
         COLLECTION_DIRECTORY_PATH: ${{ inputs.collection_directory_path }}
     - name: Pull changes from sync so we can update the metadata file
-      if: ${{ !env.DRY_RUN }}
+      if: ${{ !env.DRY_RUN && !cancelled() }}
       shell: bash
       run: git pull
     - uses: stefanzweifel/git-auto-commit-action@8756aa072ef5b4a080af5dc8fef36c5d586e521d # v5.0.0
-      if: ${{ !env.DRY_RUN }}
+      if: ${{ !env.DRY_RUN && !cancelled() }}
       with:
         file_pattern: "${{ inputs.collection_directory_path }}/**/resources/*"
         commit_message: "Update resources"
         commit_author: "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
     - uses: stefanzweifel/git-auto-commit-action@8756aa072ef5b4a080af5dc8fef36c5d586e521d # v5.0.0
-      if: ${{ !env.DRY_RUN }}
+      if: ${{ !env.DRY_RUN && !cancelled() }}
       with:
         file_pattern: "${{ inputs.collection_directory_path }}/GitHubPublisher.json"
         commit_message: "Update GitHubPublisher.json"
