@@ -804,7 +804,7 @@ class GitHubPublisher(guru.PublisherFolders):
         # Update the card path if it has been moved
         if not self.get_repository_content(card_path).ok:
             card = source.get_card(guru_id)
-            self.update_external_card(external_id, card)
+            self.update_external_card(external_id, card, None, None, None)
             card_path = self.get_metadata(guru_id)["external_path"]
 
         if not self.get_repository_content(card_path).ok:
