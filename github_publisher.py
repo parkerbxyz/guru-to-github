@@ -801,15 +801,19 @@ class GitHubPublisher(guru.PublisherFolders):
         card_sha = self.get_metadata(guru_id)["external_sha"]
         # card_sha = self.get_repository_content(card_path).json().get("sha")
 
-        # Update the card path if it has been moved
+        # Try a different path if the card cannot be found
         if not self.get_repository_content(card_path).ok:
             card = source.get_card(guru_id)
-            self.update_external_card(external_id, card, None, None, None)
-            card_path = self.get_metadata(guru_id)["external_path"]
-
-        if not self.get_repository_content(card_path).ok:
-            print(f"Unable to find {card_path}")
-            return
+            old_card_path = card_path
+            old_card_name = card_name
+            new_card_path = self.get_external_card_path(card)
+            card_path = (
+                self.get_repository_content(new_card_path)
+                or self.get_repository_content(old_card_path)
+                or self.get_repository_content(
+                    f"{path.dirname(new_card_path)}/{old_card_name}"
+                )
+            )
 
         return self.delete_a_file(card_path, f"Delete {card_name}", card_sha)
 
