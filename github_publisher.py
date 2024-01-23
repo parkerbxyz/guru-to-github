@@ -576,13 +576,12 @@ class GitHubPublisher(guru.PublisherFolders):
 
         old_folder_path = folder_metadata["external_path"]
         new_folder_path = self.get_external_folder_path(folder)
+        alt_folder_path = f"{path.dirname(new_folder_path)}/{old_folder_name}"
 
         external_folder_response = (
             self.get_repository_content(new_folder_path)
             or self.get_repository_content(old_folder_path)
-            or self.get_repository_content(
-                f"{path.dirname(new_folder_path)}/{old_folder_name}"
-            )
+            or self.get_repository_content(alt_folder_path)
         )
 
         if external_folder_response.ok:
@@ -733,17 +732,17 @@ class GitHubPublisher(guru.PublisherFolders):
         card_metadata = self.get_metadata(card.id)
 
         old_card_path = card_metadata["external_path"]
-        new_card_path = self.get_external_card_path(card)
-
         old_card_name = card_metadata["external_name"]
+
+        new_card_path = self.get_external_card_path(card)
         new_card_name = path.basename(new_card_path)
+
+        alt_card_path = f"{path.dirname(new_card_path)}/{old_card_name}"
 
         external_card_response = (
             self.get_repository_content(new_card_path)
             or self.get_repository_content(old_card_path)
-            or self.get_repository_content(
-                f"{path.dirname(new_card_path)}/{old_card_name}"
-            )
+            or self.get_repository_content(alt_card_path)
         )
 
         if external_card_response.ok:
