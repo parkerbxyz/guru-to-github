@@ -359,6 +359,40 @@ class GitHubPublisher(guru.PublisherFolders):
 
         return results
 
+    def get_external_path_by_sha(self, sha):
+        """
+        Attempt to find the path of a file in the repository HEAD by its blob SHA.
+        This can help the script recover when the metadata file is not in sync with the repository.
+        """
+        git_process = subprocess.run(
+            ["/usr/bin/git", "ls-tree", "-r", "HEAD"],
+            check=True,
+            text=True,
+            capture_output=True,
+        )  # nosec B603
+        grep_process = subprocess.run(
+            ["/usr/bin/grep", sha],
+            input=git_process.stdout,
+            check=True,
+            text=True,
+            capture_output=True,
+        )  # nosec B603
+        cut_process = subprocess.run(
+            ["/usr/bin/cut", "-f", "2"],
+            input=grep_process.stdout,
+            check=True,
+            text=True,
+            capture_output=True,
+        )  # nosec B603
+
+        # We get a relative path because this script is run from the collection directory
+        relative_path = cut_process.stdout.strip()
+
+        collection_directory_path = environ["COLLECTION_DIRECTORY_PATH"]
+
+        # Return the full path so it can be passed to the GitHub API
+        return path.join(collection_directory_path, relative_path)
+
     def update_a_reference(self, ref: str, sha):
         """
         Update a Git reference.
@@ -798,10 +832,17 @@ class GitHubPublisher(guru.PublisherFolders):
         Delete Markdown documents when their corresponding Guru Cards are archived.
         """
         guru_id = self.get_guru_id(external_id)
-        card_name = self.get_metadata(guru_id)["external_name"]
-        card_path = self.get_metadata(guru_id)["external_path"]
-        card_sha = self.get_metadata(guru_id)["external_sha"]
-        # card_sha = self.get_repository_content(card_path).json().get("sha")
+        card_metadata = self.get_metadata(guru_id)
+        card_sha = card_metadata["external_sha"]
+        card_name = card_metadata["external_name"]
+        card_path = card_metadata["external_path"]
+
+        external_card_response = self.get_repository_content(card_path)
+
+        if not external_card_response.ok:
+            # Attempt to get the card path based on its blob SHA
+            card_path = self.get_external_path_by_sha(card_sha)
+
         return self.delete_a_file(card_path, f"Delete {card_name}", card_sha)
 
 
