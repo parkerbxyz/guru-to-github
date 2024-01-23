@@ -232,14 +232,7 @@ class GitHubPublisher(guru.PublisherFolders):
         This builds the path(s) for a card in the GitHub repository.
         Since a card may be in multiple folders, it may have multiple paths.
         """
-        try:
-            folders_for_card = card.folders
-        except BaseException as e:
-            # We will encounter a 404 error if the card cannot be found (usually because it was deleted)
-            if '404' in str(e):
-                folders_for_card = None
-            else:
-                raise e
+        folders_for_card = card.folders
 
         if folders_for_card:
             first_folder = source.get_folder(folders_for_card[0])
@@ -798,31 +791,15 @@ class GitHubPublisher(guru.PublisherFolders):
         Delete Markdown documents when their corresponding Guru Cards are archived.
         """
         guru_id = self.get_guru_id(external_id)
-        card: guru.Card = source.get_card(guru_id)
-
-        old_card_name = self.get_metadata(guru_id)["external_name"]
-        old_card_path = self.get_metadata(guru_id)["external_path"]
-        new_card_path = self.get_external_card_path(card)
-        alt_card_path = f"{path.dirname(new_card_path)}/{old_card_name}"
-        external_card_response = (
-            self.get_repository_content(new_card_path)
-            or self.get_repository_content(old_card_path)
-            or self.get_repository_content(alt_card_path)
-        )
-
-        print(f"Old card path: {old_card_path}")
-        print(f"New card path: {new_card_path}")
-        print(f"Alt card path: {alt_card_path}")
-
-        if external_card_response.ok:
-            self.update_external_metadata(card.id, external_card_response.json())
-            print("Found external card to delete")
-
         card_metadata = self.get_metadata(guru_id)
         card_name = card_metadata["external_name"]
         card_path = card_metadata["external_path"]
         card_sha = card_metadata["external_sha"]
         # card_sha = self.get_repository_content(card_path).json().get("sha")
+
+        external_card_response = self.get_repository_content(card_path)
+        if not external_card_response.ok:
+            print(f"File not found: {card_path}")
 
         return self.delete_a_file(card_path, f"Delete {card_name}", card_sha)
 
