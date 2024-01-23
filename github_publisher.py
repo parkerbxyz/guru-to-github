@@ -384,7 +384,13 @@ class GitHubPublisher(guru.PublisherFolders):
             capture_output=True,
         )
 
-        return cut_process.stdout.strip()
+        # We get a relative path because this script is run from the collection directory
+        relative_path = cut_process.stdout.strip()
+
+        collection_directory = environ["GITHUB_COLLECTION_DIRECTORY"]
+
+        # Return the full path so it can be passed to the GitHub API
+        return path.join(collection_directory, relative_path)
 
     def update_a_reference(self, ref: str, sha):
         """
