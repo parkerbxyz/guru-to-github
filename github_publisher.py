@@ -584,10 +584,6 @@ class GitHubPublisher(guru.PublisherFolders):
         current_folder_name = self.get_metadata(folder.id)["external_name"]
         current_folder_path = self.get_metadata(folder.id)["external_path"]
 
-        print(f"Old folder path: {old_folder_path}")
-        print(f"New folder path: {new_folder_path}")
-        print(f"Current folder path: {current_folder_path}")
-
         folder_name_changed = new_folder_name != current_folder_name
         folder_path_changed = path.dirname(new_folder_path) != path.dirname(
             current_folder_path
