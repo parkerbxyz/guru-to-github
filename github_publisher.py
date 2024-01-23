@@ -581,7 +581,7 @@ class GitHubPublisher(guru.PublisherFolders):
         if external_folder_response.ok:
             self.update_external_metadata(folder.id, external_folder_response.json())
 
-        current_folder_name = external_folder_response.json().get("content").response_json["path"]
+        current_folder_name = external_folder_response.json().get("content")["path"]
         print(f"Current folder name: {current_folder_name}")
         current_folder_path = self.get_metadata(folder.id)["external_path"]
         print(f"Current folder path: {current_folder_path}")
