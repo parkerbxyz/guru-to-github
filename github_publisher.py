@@ -822,10 +822,11 @@ class GitHubPublisher(guru.PublisherFolders):
         """
         guru_id = self.get_guru_id(external_id)
         card_metadata = self.get_metadata(guru_id)
-        card_name = card_metadata["external_name"]
-        card_path = card_metadata["external_path"]
         card_sha = card_metadata["external_sha"]
-        # card_sha = self.get_repository_content(card_path).json().get("sha")
+        card_name = card_metadata["external_name"]
+        card_path = (
+            self.get_external_path_by_sha(card_sha) or card_metadata["external_path"]
+        )
 
         external_card_response = self.get_repository_content(card_path)
         if not external_card_response.ok:
