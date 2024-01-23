@@ -566,52 +566,61 @@ class GitHubPublisher(guru.PublisherFolders):
         """
         folder_metadata = self.get_metadata(folder.id)
 
-        old_folder_path = folder_metadata["external_path"]
-        new_folder_path = self.get_external_folder_path(folder)
-        folder_path_changed = path.dirname(new_folder_path) != path.dirname(
-            old_folder_path
-        )
-
         old_folder_name = folder_metadata["external_name"]
         new_folder_name = folder.title
-        folder_name_changed = new_folder_name != old_folder_name
+
+        old_folder_path = folder_metadata["external_path"]
+        new_folder_path = self.get_external_folder_path(folder)
+        alt_folder_path = f"{path.dirname(new_folder_path)}/{old_folder_name}"
 
         external_folder_response = (
             self.get_repository_content(new_folder_path)
             or self.get_repository_content(old_folder_path)
-            or self.get_repository_content(
-                f"{path.dirname(new_folder_path)}/{old_folder_name}"
-            )
+            or self.get_repository_content(alt_folder_path)
         )
 
         if external_folder_response.ok:
             self.update_external_metadata(folder.id, external_folder_response.json())
 
-        if folder_path_changed or folder_name_changed:
+        current_folder_name = self.get_metadata(folder.id)["external_name"]
+        current_folder_path = self.get_metadata(folder.id)["external_path"]
+
+        folder_name_changed = new_folder_name != current_folder_name
+        folder_path_changed = path.dirname(new_folder_path) != path.dirname(
+            current_folder_path
+        )
+
+        if (folder_path_changed or folder_name_changed) and external_folder_response.ok:
             commit_message = (
-                f"Rename '{old_folder_name}' to '{new_folder_name}'"
+                f"Rename '{current_folder_name}' to '{new_folder_name}'"
                 if folder_name_changed
                 else f"Update {new_folder_name} path"
             )
 
-        if not self.get_repository_content(new_folder_path).ok:
-            rename_response = self.rename_file_or_directory(
-                folder.id,
-                old_folder_path,
-                new_folder_path,
-                commit_message,
-            )
+            new_folder_path_available = not self.get_repository_content(
+                new_folder_path
+            ).ok
 
-            if rename_response.ok:
-                # Replace old folder path with new folder path in metadata file
-                for _guru_id, metadata in self._PublisherFolders__metadata.items():
-                    if metadata.get("external_path"):
-                        metadata["external_path"] = metadata["external_path"].replace(
-                            f"{old_folder_path}/",
-                            f"{new_folder_path}/",
-                        )
+            if new_folder_path_available:
+                rename_response = self.rename_file_or_directory(
+                    folder.id,
+                    current_folder_path,
+                    new_folder_path,
+                    commit_message,
+                )
 
-            return rename_response
+                if rename_response.ok:
+                    # Replace old folder path with new folder path in metadata file
+                    for _guru_id, metadata in self._PublisherFolders__metadata.items():
+                        if metadata.get("external_path"):
+                            metadata["external_path"] = metadata[
+                                "external_path"
+                            ].replace(
+                                f"{current_folder_path}/",
+                                f"{new_folder_path}/",
+                            )
+
+                return rename_response
 
         return external_folder_response
 
@@ -720,44 +729,54 @@ class GitHubPublisher(guru.PublisherFolders):
         card_metadata = self.get_metadata(card.id)
 
         old_card_path = card_metadata["external_path"]
-        new_card_path = self.get_external_card_path(card)
-        card_path_changed = path.dirname(new_card_path) != path.dirname(old_card_path)
-
         old_card_name = card_metadata["external_name"]
+
+        new_card_path = self.get_external_card_path(card)
         new_card_name = path.basename(new_card_path)
-        card_name_changed = new_card_name != old_card_name
+
+        alt_card_path = f"{path.dirname(new_card_path)}/{old_card_name}"
 
         external_card_response = (
             self.get_repository_content(new_card_path)
             or self.get_repository_content(old_card_path)
-            or self.get_repository_content(
-                f"{path.dirname(new_card_path)}/{old_card_name}"
-            )
+            or self.get_repository_content(alt_card_path)
         )
 
         if external_card_response.ok:
             self.update_external_metadata(card.id, external_card_response.json())
 
+        current_card_name = self.get_metadata(card.id)["external_name"]
+        current_card_path = self.get_metadata(card.id)["external_path"]
+
+        card_name_changed = new_card_name != current_card_name
+        card_path_changed = path.dirname(new_card_path) != path.dirname(
+            current_card_path
+        )
+
         if changes.content_changed or changes.folders_added or changes.folders_removed:
-            old_parent_folder = path.basename(path.dirname(old_card_path))
+            old_parent_folder = path.basename(path.dirname(current_card_path))
             new_parent_folder = path.basename(path.dirname(new_card_path))
             parent_folder_changed = new_parent_folder != old_parent_folder
 
             if card_name_changed and parent_folder_changed:
-                commit_message = f"Rename {old_card_path} to {new_card_path}"
+                commit_message = f"Rename {current_card_path} to {new_card_path}"
             elif card_name_changed:
-                commit_message = f"Rename {old_card_name} to {new_card_name}"
+                commit_message = f"Rename {current_card_name} to {new_card_name}"
             elif parent_folder_changed:
                 commit_message = f"Move {new_card_name} from '{old_parent_folder}' to '{new_parent_folder}'"
             else:
                 commit_message = f"Update {new_card_name}"
 
+            new_card_path_available = not self.get_repository_content(new_card_path).ok
+
             if (
-                card_path_changed or card_name_changed
-            ) and not self.get_repository_content(new_card_path):
+                (card_path_changed or card_name_changed)
+                and new_card_path_available
+                and external_card_response.ok
+            ):
                 self.rename_file_or_directory(
                     card.id,
-                    old_card_path,
+                    current_card_path,
                     new_card_path,
                     commit_message,
                 )
