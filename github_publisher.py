@@ -721,11 +721,9 @@ class GitHubPublisher(guru.PublisherFolders):
 
         old_card_path = card_metadata["external_path"]
         new_card_path = self.get_external_card_path(card)
-        card_path_changed = path.dirname(new_card_path) != path.dirname(old_card_path)
 
         old_card_name = card_metadata["external_name"]
         new_card_name = path.basename(new_card_path)
-        card_name_changed = new_card_name != old_card_name
 
         external_card_response = (
             self.get_repository_content(new_card_path)
@@ -737,27 +735,35 @@ class GitHubPublisher(guru.PublisherFolders):
 
         if external_card_response.ok:
             self.update_external_metadata(card.id, external_card_response.json())
+            current_card_name = self.get_metadata(card.id)["external_name"]
+            current_card_path = self.get_metadata(card.id)["external_path"]
+
+        card_name_changed = new_card_name != current_card_name
+        card_path_changed = path.dirname(new_card_path) != path.dirname(
+            current_card_path
+        )
 
         if changes.content_changed or changes.folders_added or changes.folders_removed:
-            old_parent_folder = path.basename(path.dirname(old_card_path))
+            old_parent_folder = path.basename(path.dirname(current_card_path))
             new_parent_folder = path.basename(path.dirname(new_card_path))
             parent_folder_changed = new_parent_folder != old_parent_folder
 
             if card_name_changed and parent_folder_changed:
-                commit_message = f"Rename {old_card_path} to {new_card_path}"
+                commit_message = f"Rename {current_card_path} to {new_card_path}"
             elif card_name_changed:
-                commit_message = f"Rename {old_card_name} to {new_card_name}"
+                commit_message = f"Rename {current_card_name} to {new_card_name}"
             elif parent_folder_changed:
                 commit_message = f"Move {new_card_name} from '{old_parent_folder}' to '{new_parent_folder}'"
             else:
                 commit_message = f"Update {new_card_name}"
 
+            # Rename the card if the card name or path has changed and the new card path is available
             if (
                 card_path_changed or card_name_changed
             ) and not self.get_repository_content(new_card_path):
                 self.rename_file_or_directory(
                     card.id,
-                    old_card_path,
+                    current_card_path,
                     new_card_path,
                     commit_message,
                 )
