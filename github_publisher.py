@@ -596,8 +596,9 @@ class GitHubPublisher(guru.PublisherFolders):
                 else f"Update {new_folder_name} path"
             )
 
-        # Rename the folder if the folder name or path has changed and the new folder path is available
-        if 'commit_message' in locals() and not self.get_repository_content(new_folder_path).ok:
+        new_folder_path_available = not self.get_repository_content(new_folder_path).ok
+
+        if (folder_path_changed or folder_name_changed) and new_folder_path_available:
             rename_response = self.rename_file_or_directory(
                 folder.id,
                 current_folder_path,
@@ -759,10 +760,9 @@ class GitHubPublisher(guru.PublisherFolders):
             else:
                 commit_message = f"Update {new_card_name}"
 
-            # Rename the card if the card name or path has changed and the new card path is available
-            if (
-                card_path_changed or card_name_changed
-            ) and not self.get_repository_content(new_card_path):
+            new_card_path_available = not self.get_repository_content(new_card_path).ok
+
+            if (card_path_changed or card_name_changed) and new_card_path_available:
                 self.rename_file_or_directory(
                     card.id,
                     current_card_path,
