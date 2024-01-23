@@ -835,13 +835,13 @@ class GitHubPublisher(guru.PublisherFolders):
         card_metadata = self.get_metadata(guru_id)
         card_sha = card_metadata["external_sha"]
         card_name = card_metadata["external_name"]
-        card_path = (
-            self.get_external_path_by_sha(card_sha) or card_metadata["external_path"]
-        )
+        card_path = card_metadata["external_path"]
 
         external_card_response = self.get_repository_content(card_path)
+
         if not external_card_response.ok:
-            print(f"File not found: {card_path}")
+            # Attempt to get the card path based on its blob SHA
+            card_path = self.get_external_path_by_sha(card_sha)
 
         return self.delete_a_file(card_path, f"Delete {card_name}", card_sha)
 
@@ -853,7 +853,6 @@ if __name__ == "__main__":
     destination = GitHubPublisher(source)
 
     guru_collection_id = environ["GURU_COLLECTION_ID"]
-
     destination.publish_collection(guru_collection_id)
 
     # Delete Markdown documents when their corresponding Guru
