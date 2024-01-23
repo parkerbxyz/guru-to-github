@@ -799,9 +799,8 @@ if __name__ == "__main__":
 
     guru_collection_id = environ["GURU_COLLECTION_ID"]
 
-    try:
-        destination.publish_collection(guru_collection_id)
-    finally:
-        # Delete Markdown documents when their corresponding Guru
-        # cards are archived or removed from a folder or collection
-        destination.process_deletions()
+    destination.publish_collection(guru_collection_id)
+
+    # Delete Markdown documents when their corresponding Guru
+    # cards are archived or removed from a folder or collection
+    destination.process_deletions()
