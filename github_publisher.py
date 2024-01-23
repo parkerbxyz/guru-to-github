@@ -596,7 +596,7 @@ class GitHubPublisher(guru.PublisherFolders):
             )
 
         # Rename the folder if the folder name or path has changed and the new folder path is available
-        if commit_message and not self.get_repository_content(new_folder_path).ok:
+        if 'commit_message' in locals() and not self.get_repository_content(new_folder_path).ok:
             rename_response = self.rename_file_or_directory(
                 folder.id,
                 current_folder_path,
