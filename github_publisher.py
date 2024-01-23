@@ -232,7 +232,7 @@ class GitHubPublisher(guru.PublisherFolders):
         This builds the path(s) for a card in the GitHub repository.
         Since a card may be in multiple folders, it may have multiple paths.
         """
-        folders_for_card = card.folders
+        folders_for_card = card.folders or source.get_folders_for_card(card)
 
         if folders_for_card:
             first_folder = source.get_folder(folders_for_card[0])
@@ -792,7 +792,7 @@ class GitHubPublisher(guru.PublisherFolders):
         Delete Markdown documents when their corresponding Guru Cards are archived.
         """
         guru_id = self.get_guru_id(external_id)
-        card = source.get_card(guru_id)
+        card: guru.Card = source.get_card(guru_id)
 
         old_card_name = self.get_metadata(guru_id)["external_name"]
         old_card_path = self.get_metadata(guru_id)["external_path"]
