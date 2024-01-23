@@ -232,7 +232,7 @@ class GitHubPublisher(guru.PublisherFolders):
         This builds the path(s) for a card in the GitHub repository.
         Since a card may be in multiple folders, it may have multiple paths.
         """
-        folders_for_card = card.folders or source.get_folders_for_card(card)
+        folders_for_card = card.folders or None
 
         if folders_for_card:
             first_folder = source.get_folder(folders_for_card[0])
@@ -797,17 +797,16 @@ class GitHubPublisher(guru.PublisherFolders):
         old_card_name = self.get_metadata(guru_id)["external_name"]
         old_card_path = self.get_metadata(guru_id)["external_path"]
         new_card_path = self.get_external_card_path(card)
+        alt_card_path = f"{path.dirname(new_card_path)}/{old_card_name}"
         external_card_response = (
             self.get_repository_content(new_card_path)
             or self.get_repository_content(old_card_path)
-            or self.get_repository_content(
-                f"{path.dirname(new_card_path)}/{old_card_name}"
-            )
+            or self.get_repository_content(alt_card_path)
         )
 
         print(f"Old card path: {old_card_path}")
         print(f"New card path: {new_card_path}")
-        print(f"Alt card path: {f'{path.dirname(new_card_path)}/{old_card_name}'}")
+        print(f"Alt card path: {alt_card_path}")
 
         if external_card_response.ok:
             self.update_external_metadata(card.id, external_card_response.json())
