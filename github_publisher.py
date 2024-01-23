@@ -580,8 +580,9 @@ class GitHubPublisher(guru.PublisherFolders):
 
         if external_folder_response.ok:
             self.update_external_metadata(folder.id, external_folder_response.json())
-            current_folder_name = self.get_metadata(folder.id)["external_name"]
-            current_folder_path = self.get_metadata(folder.id)["external_path"]
+
+        current_folder_name = self.get_metadata(folder.id)["external_name"]
+        current_folder_path = self.get_metadata(folder.id)["external_path"]
 
         folder_name_changed = new_folder_name != current_folder_name
         folder_path_changed = path.dirname(new_folder_path) != path.dirname(
@@ -735,8 +736,9 @@ class GitHubPublisher(guru.PublisherFolders):
 
         if external_card_response.ok:
             self.update_external_metadata(card.id, external_card_response.json())
-            current_card_name = self.get_metadata(card.id)["external_name"]
-            current_card_path = self.get_metadata(card.id)["external_path"]
+
+        current_card_name = self.get_metadata(card.id)["external_name"]
+        current_card_path = self.get_metadata(card.id)["external_path"]
 
         card_name_changed = new_card_name != current_card_name
         card_path_changed = path.dirname(new_card_path) != path.dirname(
