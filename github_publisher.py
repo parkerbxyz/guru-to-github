@@ -805,8 +805,13 @@ class GitHubPublisher(guru.PublisherFolders):
             )
         )
 
+        print(f"Old card path: {old_card_path}")
+        print(f"New card path: {new_card_path}")
+        print(f"Alt card path: {f'{path.dirname(new_card_path)}/{old_card_name}'}")
+
         if external_card_response.ok:
             self.update_external_metadata(card.id, external_card_response.json())
+            print("Found external card to delete")
 
         card_metadata = self.get_metadata(guru_id)
         card_name = card_metadata["external_name"]
