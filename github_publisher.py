@@ -564,15 +564,11 @@ class GitHubPublisher(guru.PublisherFolders):
         """
         folder_metadata = self.get_metadata(folder.id)
 
-        old_folder_path = folder_metadata["external_path"]
-        new_folder_path = self.get_external_folder_path(folder)
-        folder_path_changed = path.dirname(new_folder_path) != path.dirname(
-            old_folder_path
-        )
-
         old_folder_name = folder_metadata["external_name"]
         new_folder_name = folder.title
-        folder_name_changed = new_folder_name != old_folder_name
+
+        old_folder_path = folder_metadata["external_path"]
+        new_folder_path = self.get_external_folder_path(folder)
 
         external_folder_response = (
             self.get_repository_content(new_folder_path)
@@ -584,18 +580,26 @@ class GitHubPublisher(guru.PublisherFolders):
 
         if external_folder_response.ok:
             self.update_external_metadata(folder.id, external_folder_response.json())
+            current_folder_name = self.get_metadata(folder.id)["external_name"]
+            current_folder_path = self.get_metadata(folder.id)["external_path"]
+
+        folder_name_changed = new_folder_name != current_folder_name
+        folder_path_changed = path.dirname(new_folder_path) != path.dirname(
+            current_folder_path
+        )
 
         if folder_path_changed or folder_name_changed:
             commit_message = (
-                f"Rename '{old_folder_name}' to '{new_folder_name}'"
+                f"Rename '{current_folder_name}' to '{new_folder_name}'"
                 if folder_name_changed
                 else f"Update {new_folder_name} path"
             )
 
-        if not self.get_repository_content(new_folder_path).ok:
+        # Rename the folder if the folder name or path has changed and the new folder path is available
+        if commit_message and not self.get_repository_content(new_folder_path).ok:
             rename_response = self.rename_file_or_directory(
                 folder.id,
-                old_folder_path,
+                current_folder_path,
                 new_folder_path,
                 commit_message,
             )
@@ -605,7 +609,7 @@ class GitHubPublisher(guru.PublisherFolders):
                 for _guru_id, metadata in self._PublisherFolders__metadata.items():
                     if metadata.get("external_path"):
                         metadata["external_path"] = metadata["external_path"].replace(
-                            f"{old_folder_path}/",
+                            f"{current_folder_path}/",
                             f"{new_folder_path}/",
                         )
 
