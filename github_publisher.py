@@ -359,6 +359,36 @@ class GitHubPublisher(guru.PublisherFolders):
 
         return results
 
+    def get_external_path_by_sha(self, sha):
+        """
+        Attempt to find the path of a file in the repository HEAD by its blob SHA.
+        """
+        git_process = subprocess.run(
+            "/usr/bin/git",
+            "ls-tree",
+            "-r",
+            "HEAD",
+            check=True,
+            text=True,
+            capture_output=True,
+        )
+        grep_process = subprocess.run(
+            ["grep", sha],
+            input=git_process.stdout,
+            check=True,
+            text=True,
+            capture_output=True,
+        )
+        cut_process = subprocess.run(
+            ["cut", "-f", "2"],
+            input=grep_process.stdout,
+            check=True,
+            text=True,
+            capture_output=True,
+        )
+
+        return cut_process.stdout.strip()
+
     def update_a_reference(self, ref: str, sha):
         """
         Update a Git reference.
