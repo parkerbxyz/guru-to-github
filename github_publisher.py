@@ -786,7 +786,15 @@ if __name__ == "__main__":
     destination = GitHubPublisher(source)
 
     guru_collection_id = environ["GURU_COLLECTION_ID"]
-    destination.publish_collection(guru_collection_id)
+
+    try:
+        destination.publish_collection(guru_collection_id)
+    # We might get a 404 if we try to rename a file or folder that no longer exists
+    except requests.exceptions.HTTPError:
+        # Process deletions to ensure we don't have anything in the metadata file that no longer exists
+        destination.process_deletions()
+        # Try to publish the collection again
+        destination.publish_collection(guru_collection_id)
 
     # Delete Markdown documents when their corresponding Guru
     # cards are archived or removed from a folder or collection
