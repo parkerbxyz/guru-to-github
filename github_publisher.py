@@ -362,6 +362,7 @@ class GitHubPublisher(guru.PublisherFolders):
     def get_external_path_by_sha(self, sha):
         """
         Attempt to find the path of a file in the repository HEAD by its blob SHA.
+        This can help the script recover when the metadata file is not in sync with the repository.
         """
         git_process = subprocess.run(
             ["/usr/bin/git", "ls-tree", "-r", "HEAD"],
