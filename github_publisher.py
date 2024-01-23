@@ -632,7 +632,7 @@ class GitHubPublisher(guru.PublisherFolders):
         """
         pass
 
-    def find_external_card(self, card):
+    def find_external_card(self, card: guru.Card):
         """
         This checks if a card already exists externally by looking for a Markdown
         file with the same name.
