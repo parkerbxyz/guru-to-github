@@ -579,7 +579,6 @@ class GitHubPublisher(guru.PublisherFolders):
         )
 
         if external_folder_response.ok:
-            print(f"Updating external metadata for {folder.title}...")
             self.update_external_metadata(folder.id, external_folder_response.json())
 
         current_folder_name = self.get_metadata(folder.id)["external_name"]
@@ -594,7 +593,7 @@ class GitHubPublisher(guru.PublisherFolders):
             current_folder_path
         )
 
-        if folder_path_changed or folder_name_changed:
+        if (folder_path_changed or folder_name_changed) and external_folder_response.ok:
             commit_message = (
                 f"Rename '{current_folder_name}' to '{new_folder_name}'"
                 if folder_name_changed
@@ -771,7 +770,11 @@ class GitHubPublisher(guru.PublisherFolders):
 
             new_card_path_available = not self.get_repository_content(new_card_path).ok
 
-            if (card_path_changed or card_name_changed) and new_card_path_available:
+            if (
+                (card_path_changed or card_name_changed)
+                and new_card_path_available
+                and external_card_response.ok
+            ):
                 self.rename_file_or_directory(
                     card.id,
                     current_card_path,
