@@ -364,10 +364,7 @@ class GitHubPublisher(guru.PublisherFolders):
         Attempt to find the path of a file in the repository HEAD by its blob SHA.
         """
         git_process = subprocess.run(
-            ["/usr/bin/git",
-            "ls-tree",
-            "-r",
-            "HEAD"],
+            ["/usr/bin/git", "ls-tree", "-r", "HEAD"],
             check=True,
             text=True,
             capture_output=True,
@@ -584,6 +581,7 @@ class GitHubPublisher(guru.PublisherFolders):
         function to create the folder. Since Git doesn't track empty
         directories, this function has been left unimplemented.
         """
+        pass
 
     def update_external_folder(
         self, external_id, folder: guru.Folder, collection: guru.Collection
@@ -659,8 +657,9 @@ class GitHubPublisher(guru.PublisherFolders):
         """
         This is not implemented because Git doesn't track directories.
         """
+        pass
 
-    def find_external_card(self, card):
+    def find_external_card(self, card: guru.Card):
         """
         This checks if a card already exists externally by looking for a Markdown
         file with the same name.
