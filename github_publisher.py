@@ -364,10 +364,10 @@ class GitHubPublisher(guru.PublisherFolders):
         Attempt to find the path of a file in the repository HEAD by its blob SHA.
         """
         git_process = subprocess.run(
-            "/usr/bin/git",
+            ["/usr/bin/git",
             "ls-tree",
             "-r",
-            "HEAD",
+            "HEAD"],
             check=True,
             text=True,
             capture_output=True,
