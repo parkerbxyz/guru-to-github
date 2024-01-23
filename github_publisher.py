@@ -421,7 +421,8 @@ class GitHubPublisher(guru.PublisherFolders):
 
         update_a_reference_response = self.update_a_reference(github_ref, commit_sha)
 
-        if self.get_type(guru_id) == "collection":
+        guru_object_type = self.get_type(guru_id)
+        if guru_object_type == "collection":
             new_path = f"{new_path}/README.md"
 
         # Wait a second for the reference to be updated
@@ -553,6 +554,7 @@ class GitHubPublisher(guru.PublisherFolders):
         function to create the folder. Since Git doesn't track empty
         directories, this function has been left unimplemented.
         """
+        pass
 
     def update_external_folder(
         self, external_id, folder: guru.Folder, collection: guru.Collection
@@ -628,6 +630,7 @@ class GitHubPublisher(guru.PublisherFolders):
         """
         This is not implemented because Git doesn't track directories.
         """
+        pass
 
     def find_external_card(self, card):
         """
