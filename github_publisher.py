@@ -232,7 +232,14 @@ class GitHubPublisher(guru.PublisherFolders):
         This builds the path(s) for a card in the GitHub repository.
         Since a card may be in multiple folders, it may have multiple paths.
         """
-        folders_for_card = card.folders or None
+        try:
+            folders_for_card = card.folders
+        except BaseException as e:
+            # We will encounter a 404 error if the card cannot be found (usually because it was deleted)
+            if '404' in str(e):
+                folders_for_card = None
+            else:
+                raise e
 
         if folders_for_card:
             first_folder = source.get_folder(folders_for_card[0])
