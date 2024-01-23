@@ -430,7 +430,7 @@ class GitHubPublisher(guru.PublisherFolders):
 
         content_response = self.get_repository_content(new_path)
         if not content_response.ok:
-            print("Failed to get external metadata for renamed file")
+            print(f"Failed to get external metadata for renamed {guru_object_type}")
             print(content_response.json().get("message"))
             content_response.raise_for_status()
 
