@@ -494,20 +494,20 @@
         },
         "types-beautifulsoup4": {
             "hashes": [
-                "sha256:98d628985b71b140bd3bc22a8cb0ab603c2f2d08f20d37925965eb4a21739be8",
-                "sha256:cbdd60ab8aeac737ac014431b6e921b43e84279c0405fdd25a6900bb0e71da5b"
+                "sha256:000cdddb8aee4effb45a04be95654de8629fb8594a4f2f1231cff81108977324",
+                "sha256:e37e4cfa11b03b01775732e56d2c010cb24ee107786277bae6bc0fa3e305b686"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.8'",
-            "version": "==4.12.0.20240106"
+            "version": "==4.12.0.20240229"
         },
         "types-html5lib": {
             "hashes": [
-                "sha256:61993cb89220107481e0f1da65c388ff8cf3d8c5f6e8483c97559639a596b697",
-                "sha256:fc3a1b18eb601b3eeaf92c900bd67675c0a4fa1dd1d2a2893ebdb46923547ee9"
+                "sha256:22736b7299e605ec4ba539d48691e905fd0c61c3ea610acc59922232dc84cede",
+                "sha256:af5de0125cb0fe5667543b158db83849b22e25c0e36c9149836b095548bf1020"
             ],
             "markers": "python_version >= '3.8'",
-            "version": "==1.1.11.20240106"
+            "version": "==1.1.11.20240228"
         },
         "types-requests": {
             "hashes": [
