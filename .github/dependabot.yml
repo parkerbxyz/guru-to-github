@@ -5,6 +5,9 @@ updates:
     directory: "/"
     schedule:
       interval: "monthly"
+    groups:
+      development-dependencies:
+        dependency-type: "development"
     commit-message:
       prefix: "fix"
       prefix-development: "build"
@@ -13,5 +16,8 @@ updates:
     directory: "/"
     schedule:
       interval: "monthly"
+    groups:
+      github-actions:
+        patterns: ["*"]
     commit-message:
       prefix: "ci"
