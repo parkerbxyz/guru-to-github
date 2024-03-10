@@ -10,15 +10,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  release:
-    runs-on: ubuntu-latest
-    concurrency: release
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 'lts/*'
-      - run: npm i semantic-release-plugin-github-breaking-version-tag
-      - run: npx semantic-release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  release-please:
+    uses: parkerbxyz/.github/.github/workflows/release.yml@main
+    with:
+      release-type: "python"
