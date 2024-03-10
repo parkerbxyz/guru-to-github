@@ -37,7 +37,7 @@ jobs:
       - name: MegaLinter
         id: ml
         # More info at https://megalinter.io/latest/flavors/
-        uses: oxsecurity/megalinter/flavors/python@688bc7466d7ab4faa83d614c2e6f9acf42b674dc # v7.8.0
+        uses: oxsecurity/megalinter/flavors/python@190cd0dad6dc52b2de5b810e3b290c3d6bdcc0f2 # v7.9.0
         env:
           # All available variables are described in documentation
           # https://megalinter.io/latest/configuration/
