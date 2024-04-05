@@ -109,9 +109,7 @@ class GitHubPublisher(guru.PublisherFolders):
 
         data = {
             "message": commit_message,
-            "sha": sha
-            if not None
-            else self.get_repository_content(file_path).json().get("sha"),
+            "sha": sha or self.get_repository_content(file_path).json().get("sha"),
             "branch": github_ref_name,
         }
 
