@@ -15,6 +15,7 @@ import guru
 import requests
 from bs4 import BeautifulSoup
 from requests.adapters import HTTPAdapter, Retry
+from urllib.parse import quote
 
 
 class GitHubPublisher(guru.PublisherFolders):
@@ -84,7 +85,7 @@ class GitHubPublisher(guru.PublisherFolders):
         """
         github_api_url = environ["GITHUB_API_URL"]
         repository = environ["GITHUB_REPOSITORY"]
-        url = f"{github_api_url}/repos/{repository}/contents/{file_path}"
+        url = f"{github_api_url}/repos/{repository}/contents/{quote(file_path)}"
 
         response = requests.get(
             url,
@@ -104,7 +105,7 @@ class GitHubPublisher(guru.PublisherFolders):
         """
         github_api_url = environ["GITHUB_API_URL"]
         repository = environ["GITHUB_REPOSITORY"]
-        url = f"{github_api_url}/repos/{repository}/contents/{file_path}"
+        url = f"{github_api_url}/repos/{repository}/contents/{quote(file_path)}"
         github_ref_name = environ["GITHUB_REF_NAME"]
 
         data = {
@@ -258,7 +259,7 @@ class GitHubPublisher(guru.PublisherFolders):
         """
         github_api_url = environ["GITHUB_API_URL"]
         repository = environ["GITHUB_REPOSITORY"]
-        url = f"{github_api_url}/repos/{repository}/contents/{file_path}"
+        url = f"{github_api_url}/repos/{repository}/contents/{quote(file_path)}"
         github_ref_name = environ["GITHUB_REF_NAME"]
 
         file_exists = self.get_repository_content(file_path).ok
