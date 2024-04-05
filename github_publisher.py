@@ -866,8 +866,13 @@ if __name__ == "__main__":
     source = guru.Guru(guru_user_email, guru_user_token)
     destination = GitHubPublisher(source)
 
-    guru_collection_id = environ["GURU_COLLECTION_ID"]
-    destination.publish_collection(guru_collection_id)
+    guru_collection_ids = [
+        id.strip() for id in environ["GURU_COLLECTION_IDS"].split(",")
+    ]
+
+    # Publish Collection(s)
+    for guru_collection_id in guru_collection_ids:
+        destination.publish_collection(guru_collection_id)
 
     # Delete Markdown documents when their corresponding Guru
     # cards are archived or removed from a folder or collection

@@ -7,10 +7,14 @@ branding:
 inputs:
   guru_collection_id:
     description: "ID of the Guru Collection to sync"
-    required: true
+    deprecationMessage: "'guru_collection_id' is deprecated and will be removed in a future version. Use 'guru-collection-ids' instead."
+  guru-collection-ids:
+    description: "ID(s) of the Guru Collection(s) to sync"
   collection_directory_path:
     description: "Path to the directory where the Collection and metadata file should be synced to"
-    required: true
+    deprecationMessage: "'collection_directory_path' is deprecated and will be removed in a future version. Use 'collection-directory-path' instead."
+  collection-directory-path:
+    description: "Path to the directory where the Collection and metadata file should be synced to"
 
 runs:
   using: "composite"
@@ -42,18 +46,18 @@ runs:
     # This allows us to keep the metadata file in the same directory as the collection(s)
     - name: Create the collection directory if it does not exist
       shell: bash
-      run: mkdir -p  ${{ inputs.collection_directory_path }}
+      run: mkdir -p  ${{ inputs.collection-directory-path || inputs.collection_directory_path }}
     - run: git pull
       if: ${{ !env.DRY_RUN }}
       shell: bash
     - name: Sync collection
-      working-directory: ${{ inputs.collection_directory_path }}
+      working-directory: ${{ inputs.collection-directory-path || inputs.collection_directory_path }}
       shell: bash
       run: pipenv run python ${{ github.action_path }}/github_publisher.py
       env:
         PIPENV_PIPFILE: ${{ github.action_path }}/Pipfile
-        GURU_COLLECTION_ID: ${{ inputs.guru_collection_id }}
-        COLLECTION_DIRECTORY_PATH: ${{ inputs.collection_directory_path }}
+        GURU_COLLECTION_IDS: ${{ inputs.guru-collection-ids || inputs.guru_collection_id }}
+        COLLECTION_DIRECTORY_PATH: ${{ inputs.collection-directory-path || inputs.collection_directory_path }}
     - name: Pull changes from sync so we can update the metadata file
       if: ${{ !env.DRY_RUN && !cancelled() }}
       shell: bash
@@ -61,12 +65,12 @@ runs:
     - uses: stefanzweifel/git-auto-commit-action@8756aa072ef5b4a080af5dc8fef36c5d586e521d # v5.0.0
       if: ${{ !env.DRY_RUN && !cancelled() }}
       with:
-        file_pattern: "${{ inputs.collection_directory_path }}/**/resources/*"
+        file_pattern: "${{ inputs.collection-directory-path || inputs.collection_directory_path }}/**/resources/*"
         commit_message: "Update resources"
         commit_author: "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
     - uses: stefanzweifel/git-auto-commit-action@8756aa072ef5b4a080af5dc8fef36c5d586e521d # v5.0.0
       if: ${{ !env.DRY_RUN && !cancelled() }}
       with:
-        file_pattern: "${{ inputs.collection_directory_path }}/GitHubPublisher.json"
+        file_pattern: "${{ inputs.collection-directory-path || inputs.collection_directory_path }}/GitHubPublisher.json"
         commit_message: "Update GitHubPublisher.json"
         commit_author: "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
