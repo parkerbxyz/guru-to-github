@@ -222,6 +222,7 @@ class GitHubPublisher(guru.PublisherFolders):
             parent_folder = parent_folder.get_parent()
 
         full_folder_path = f"{collection_path}/{folder_path}"
+        print(f"Full folder path: {full_folder_path}")
         return full_folder_path
 
     @lru_cache
@@ -291,8 +292,10 @@ class GitHubPublisher(guru.PublisherFolders):
             response.raise_for_status()
 
         if response.status_code == 200:  # OK (Updated)
+            print(f"Updated file: {file_path}")
             self.update_external_metadata(guru_id, response.json())
         elif response.status_code == 201:  # Created
+            print(f"Created file: {file_path}")
             external_id = self.generate_external_id(guru_id, response.json())
             return external_id
 
