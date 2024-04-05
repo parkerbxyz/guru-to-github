@@ -194,7 +194,7 @@ class GitHubPublisher(guru.PublisherFolders):
         """
         external_collection_directory_path = environ["COLLECTION_DIRECTORY_PATH"]
         collection_path = (
-            f"{external_collection_directory_path}/{collection.name}".rstrip()
+            f"{external_collection_directory_path}/{collection.name}".strip()
         )
         return collection_path
 
@@ -213,12 +213,12 @@ class GitHubPublisher(guru.PublisherFolders):
         if full_folder.id == collection_home_folder.id:
             return collection_path
 
-        folder_path: str = full_folder.title.rstrip()
+        folder_path: str = full_folder.title.strip()
         parent_folder: guru.Folder = full_folder.get_parent()
 
         # Get path by recursively prefixing parent folders to the path
         while parent_folder.id != collection_home_folder.id:
-            folder_path = f"{parent_folder.title}/{folder_path.rstrip()}"
+            folder_path = f"{parent_folder.title.strip()}/{folder_path}"
             parent_folder = parent_folder.get_parent()
 
         full_folder_path = f"{collection_path}/{folder_path}"
@@ -711,7 +711,7 @@ class GitHubPublisher(guru.PublisherFolders):
                 continue
             file_extension = path.splitext(filename)[1]
 
-            collection_name = f"{card.collection.name}".rstrip()
+            collection_name = f"{card.collection.name}".strip()
             collection_path = self.get_external_collection_path(card.collection)
             image_relative_path = f"resources/{filename}"
             image_absolute_path = f"{collection_path}/{image_relative_path}"
