@@ -362,19 +362,28 @@ class GitHubPublisher(guru.PublisherFolders):
         Attempt to find the path of a file in the repository HEAD by its blob SHA.
         This can help the script recover when the metadata file is not in sync with the repository.
         """
+        # List all files in the current commit of the current branch recursively
         git_process = subprocess.run(
             ["/usr/bin/git", "ls-tree", "-r", "HEAD"],
             check=True,
             text=True,
             capture_output=True,
         )  # nosec B603
-        grep_process = subprocess.run(
-            ["/usr/bin/grep", sha],
-            input=git_process.stdout,
-            check=True,
-            text=True,
-            capture_output=True,
-        )  # nosec B603
+
+        try:
+            # Find the line that contains the SHA
+            grep_process = subprocess.run(
+                ["/usr/bin/grep", sha],
+                input=git_process.stdout,
+                check=True,
+                text=True,
+                capture_output=True,
+            )  # nosec B603
+        except subprocess.CalledProcessError:
+            print(f"SHA {sha} not found in the repository")
+            return None
+
+        # Extract the path from the line with the SHA
         cut_process = subprocess.run(
             ["/usr/bin/cut", "-f", "2"],
             input=grep_process.stdout,
@@ -840,6 +849,10 @@ class GitHubPublisher(guru.PublisherFolders):
         if not external_card_response.ok:
             # Attempt to get the card path based on its blob SHA
             card_path = self.get_external_path_by_sha(card_sha)
+
+        if not card_path:
+            # We cannot delete a file that does not exist
+            return None  # The associated metadata will still be deleted by the SDK
 
         return self.delete_a_file(card_path, f"Delete {card_name}", card_sha)
 
