@@ -500,9 +500,9 @@ class GitHubPublisher(guru.PublisherFolders):
         response = self.get_repository_content(expected_path)
 
         if response.ok:
-            external_id = self.get_metadata(collection.id)[
-                "external_id"
-            ] or self.generate_external_id(collection.id, response.json())
+            external_id = self.get_metadata(collection.id).get(
+                "external_id", None
+            ) or self.generate_external_id(collection.id, response.json())
             return external_id
 
     def create_external_collection(self, collection: guru.Collection):
@@ -583,9 +583,9 @@ class GitHubPublisher(guru.PublisherFolders):
         response = self.get_repository_content(expected_path)
 
         if response.ok:
-            external_id = self.get_metadata(folder.id)[
-                "external_id"
-            ] or self.generate_external_id(folder.id, response.json())
+            external_id = self.get_metadata(folder.id).get(
+                "external_id", None
+            ) or self.generate_external_id(folder.id, response.json())
             return external_id
 
     def create_external_folder(self, folder: guru.Folder, collection: guru.Collection):
@@ -682,9 +682,9 @@ class GitHubPublisher(guru.PublisherFolders):
         response = self.get_repository_content(expected_path)
 
         if response.ok:
-            external_id = self.get_metadata(card.id)[
-                "external_id"
-            ] or self.generate_external_id(card.id, response.json())
+            external_id = self.get_metadata(card.id).get(
+                "external_id", None
+            ) or self.generate_external_id(card.id, response.json())
             return external_id
 
     def convert_card_content(self, card: guru.Card):
