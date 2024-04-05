@@ -709,10 +709,11 @@ class GitHubPublisher(guru.PublisherFolders):
             if filename is None:
                 # Skip images that don't have a filename
                 continue
-            if not path.splitext(filename)[1]:
+
+            file_extension = path.splitext(filename)[1]
+            if not file_extension or file_extension == ".":
                 # Skip images that don't have an extension
                 continue
-            file_extension = path.splitext(filename)[1]
 
             collection_name = f"{card.collection.name}".strip()
             collection_path = self.get_external_collection_path(card.collection)
