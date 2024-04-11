@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.1](https://github.com/parkerbxyz/guru-to-github/compare/v2.3.0...v2.3.1) (2024-04-11)
+
+
+### Documentation
+
+* **CHANGELOG:** remove duplicate entry ([c4afe2f](https://github.com/parkerbxyz/guru-to-github/commit/c4afe2f077b906e72c29ce8e913e1abdb4e71a17))
+
 ## [2.3.0](https://github.com/parkerbxyz/guru-to-github/compare/v2.2.0...v2.3.0) (2024-04-11)
 
 ### Features
