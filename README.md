@@ -2,7 +2,7 @@
 
 Sync card content from a Guru collection to a GitHub repository.
 
-> [!NOTE]
+> [!TIP]
 > If you're looking to sync content from a GitHub repository to a Guru collection, check out [peckjon/github-to-guru](https://github.com/marketplace/actions/github-to-guru).
 
 ## Usage
@@ -51,8 +51,8 @@ jobs:
     steps:
       - uses: parkerbxyz/guru-to-github@v2
         with:
-          guru_collection_id: '123ab'
-          collection_directory_path: 'collections'
+          guru-collection-ids: '123ab'
+          collection-directory-path: 'collections'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GURU_USER_EMAIL: ${{ vars.GURU_USER_EMAIL }}
@@ -61,7 +61,7 @@ jobs:
 
 ### Syncing more than one Guru Collection
 
-You can sync more than one Collection using a matrix strategy:
+You can sync more than one Collection by providing a comma-separated list of Collection IDs to the `guru-collection-ids` input.
 
 ```yaml
 name: Guru to GitHub
@@ -75,31 +75,49 @@ on:
 jobs:
   guru-to-github:
     runs-on: ubuntu-latest
-    strategy:
-      # Sync one Collection at a time to avoid conflicting changes to the metadata file
-      max-parallel: 1
-      matrix:
-        guru_collection_id: [123ab, 456cd]
+        env:
+      GURU_USER_EMAIL: ${{ vars.GURU_USER_EMAIL }}
+      GURU_USER_TOKEN: ${{ secrets.GURU_USER_TOKEN }}
     steps:
+      # Get all Guru collections shared with the "All Members" group
+      - name: Get Guru collections
+        id: get-guru-collections
+        run: |
+          curl --request GET \
+          --url "https://api.getguru.com/api/v1/groups/$GURU_GROUP_ID/collections" \
+          --header 'accept: application/json' \
+          --user ${{ vars.GURU_USER_EMAIL }}:${{ secrets.GURU_USER_TOKEN }} \
+          --output collections.json
+        env:
+          GURU_GROUP_ID: "${{ vars.GURU_GROUP_ID }}"
+
+      - name: Create list
+        id: create-list
+        run: |
+          collection_ids=$(jq --compact-output '[.[].collection.id]' collections.json)
+          echo "collection_ids=$collection_ids" >> "$GITHUB_OUTPUT"
+        shell: bash
+
       - uses: parkerbxyz/guru-to-github@v2
         with:
-          guru_collection_id: ${{ matrix.guru_collection_id }}
-          collection_directory_path: 'collections'
+          guru-collection-ids: ${{ join(fromJson(steps.create-list.outputs.collection_ids)) }}
+          collection-directory-path: "collections"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GURU_USER_EMAIL: ${{ vars.GURU_USER_EMAIL }}
-          GURU_USER_TOKEN: ${{ secrets.GURU_USER_TOKEN }}
+          PUBLISH_UNVERIFIED_CARDS: ${{ true }}
 ```
 
 Each Collection will exist as a subdirectory in the directory specified by `collection_directory_path`.
 
 ## Inputs
 
-### `guru_collection_id`
+### `guru-collection-ids`
 
-**Required:** The ID of the Guru Collection to sync.
+**Required:** The ID(s) of the Guru Collection to sync.
 
-### `collection_directory_path`
+If syncing more than one Collection, provide a comma-separated list of Collection IDs.
+
+### `collection-directory-path`
 
 **Required:** The path to the directory in the GitHub repository where the Guru Collection will be published.
 

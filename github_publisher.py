@@ -15,6 +15,7 @@ import guru
 import requests
 from bs4 import BeautifulSoup
 from requests.adapters import HTTPAdapter, Retry
+from urllib.parse import quote
 
 
 class GitHubPublisher(guru.PublisherFolders):
@@ -84,7 +85,7 @@ class GitHubPublisher(guru.PublisherFolders):
         """
         github_api_url = environ["GITHUB_API_URL"]
         repository = environ["GITHUB_REPOSITORY"]
-        url = f"{github_api_url}/repos/{repository}/contents/{file_path}"
+        url = f"{github_api_url}/repos/{repository}/contents/{quote(file_path)}"
 
         response = requests.get(
             url,
@@ -104,14 +105,12 @@ class GitHubPublisher(guru.PublisherFolders):
         """
         github_api_url = environ["GITHUB_API_URL"]
         repository = environ["GITHUB_REPOSITORY"]
-        url = f"{github_api_url}/repos/{repository}/contents/{file_path}"
+        url = f"{github_api_url}/repos/{repository}/contents/{quote(file_path)}"
         github_ref_name = environ["GITHUB_REF_NAME"]
 
         data = {
             "message": commit_message,
-            "sha": sha
-            if not None
-            else self.get_repository_content(file_path).json().get("sha"),
+            "sha": sha or self.get_repository_content(file_path).json().get("sha"),
             "branch": github_ref_name,
         }
 
@@ -196,7 +195,7 @@ class GitHubPublisher(guru.PublisherFolders):
         """
         external_collection_directory_path = environ["COLLECTION_DIRECTORY_PATH"]
         collection_path = (
-            f"{external_collection_directory_path}/{collection.name}".rstrip()
+            f"{external_collection_directory_path}/{collection.name}".strip()
         )
         return collection_path
 
@@ -215,12 +214,12 @@ class GitHubPublisher(guru.PublisherFolders):
         if full_folder.id == collection_home_folder.id:
             return collection_path
 
-        folder_path: str = full_folder.title.rstrip()
+        folder_path: str = full_folder.title.strip()
         parent_folder: guru.Folder = full_folder.get_parent()
 
         # Get path by recursively prefixing parent folders to the path
         while parent_folder.id != collection_home_folder.id:
-            folder_path = f"{parent_folder.title}/{folder_path.rstrip()}"
+            folder_path = f"{parent_folder.title.strip()}/{folder_path}"
             parent_folder = parent_folder.get_parent()
 
         full_folder_path = f"{collection_path}/{folder_path}"
@@ -259,7 +258,7 @@ class GitHubPublisher(guru.PublisherFolders):
         """
         github_api_url = environ["GITHUB_API_URL"]
         repository = environ["GITHUB_REPOSITORY"]
-        url = f"{github_api_url}/repos/{repository}/contents/{file_path}"
+        url = f"{github_api_url}/repos/{repository}/contents/{quote(file_path)}"
         github_ref_name = environ["GITHUB_REF_NAME"]
 
         file_exists = self.get_repository_content(file_path).ok
@@ -364,19 +363,28 @@ class GitHubPublisher(guru.PublisherFolders):
         Attempt to find the path of a file in the repository HEAD by its blob SHA.
         This can help the script recover when the metadata file is not in sync with the repository.
         """
+        # List all files in the current commit of the current branch recursively
         git_process = subprocess.run(
             ["/usr/bin/git", "ls-tree", "-r", "HEAD"],
             check=True,
             text=True,
             capture_output=True,
         )  # nosec B603
-        grep_process = subprocess.run(
-            ["/usr/bin/grep", sha],
-            input=git_process.stdout,
-            check=True,
-            text=True,
-            capture_output=True,
-        )  # nosec B603
+
+        try:
+            # Find the line that contains the SHA
+            grep_process = subprocess.run(
+                ["/usr/bin/grep", sha],
+                input=git_process.stdout,
+                check=True,
+                text=True,
+                capture_output=True,
+            )  # nosec B603
+        except subprocess.CalledProcessError:
+            print(f"SHA {sha} not found in the repository")
+            return None
+
+        # Extract the path from the line with the SHA
         cut_process = subprocess.run(
             ["/usr/bin/cut", "-f", "2"],
             input=grep_process.stdout,
@@ -493,9 +501,9 @@ class GitHubPublisher(guru.PublisherFolders):
         response = self.get_repository_content(expected_path)
 
         if response.ok:
-            external_id = self.get_metadata(collection.id)[
-                "external_id"
-            ] or self.generate_external_id(collection.id, response.json())
+            external_id = self.get_metadata(collection.id).get(
+                "external_id", None
+            ) or self.generate_external_id(collection.id, response.json())
             return external_id
 
     def create_external_collection(self, collection: guru.Collection):
@@ -576,9 +584,9 @@ class GitHubPublisher(guru.PublisherFolders):
         response = self.get_repository_content(expected_path)
 
         if response.ok:
-            external_id = self.get_metadata(folder.id)[
-                "external_id"
-            ] or self.generate_external_id(folder.id, response.json())
+            external_id = self.get_metadata(folder.id).get(
+                "external_id", None
+            ) or self.generate_external_id(folder.id, response.json())
             return external_id
 
     def create_external_folder(self, folder: guru.Folder, collection: guru.Collection):
@@ -675,9 +683,9 @@ class GitHubPublisher(guru.PublisherFolders):
         response = self.get_repository_content(expected_path)
 
         if response.ok:
-            external_id = self.get_metadata(card.id)[
-                "external_id"
-            ] or self.generate_external_id(card.id, response.json())
+            external_id = self.get_metadata(card.id).get(
+                "external_id", None
+            ) or self.generate_external_id(card.id, response.json())
             return external_id
 
     def convert_card_content(self, card: guru.Card):
@@ -699,12 +707,13 @@ class GitHubPublisher(guru.PublisherFolders):
             if filename is None:
                 # Skip images that don't have a filename
                 continue
-            if not path.splitext(filename)[1]:
+
+            file_extension = path.splitext(filename)[1]
+            if not file_extension or file_extension == ".":
                 # Skip images that don't have an extension
                 continue
-            file_extension = path.splitext(filename)[1]
 
-            collection_name = f"{card.collection.name}".rstrip()
+            collection_name = f"{card.collection.name}".strip()
             collection_path = self.get_external_collection_path(card.collection)
             image_relative_path = f"resources/{filename}"
             image_absolute_path = f"{collection_path}/{image_relative_path}"
@@ -843,6 +852,10 @@ class GitHubPublisher(guru.PublisherFolders):
             # Attempt to get the card path based on its blob SHA
             card_path = self.get_external_path_by_sha(card_sha)
 
+        if not card_path:
+            # We cannot delete a file that does not exist
+            return None  # The associated metadata will still be deleted by the SDK
+
         return self.delete_a_file(card_path, f"Delete {card_name}", card_sha)
 
 
@@ -852,8 +865,13 @@ if __name__ == "__main__":
     source = guru.Guru(guru_user_email, guru_user_token)
     destination = GitHubPublisher(source)
 
-    guru_collection_id = environ["GURU_COLLECTION_ID"]
-    destination.publish_collection(guru_collection_id)
+    guru_collection_ids = [
+        id.strip() for id in environ["GURU_COLLECTION_IDS"].split(",")
+    ]
+
+    # Publish Collection(s)
+    for guru_collection_id in guru_collection_ids:
+        destination.publish_collection(guru_collection_id)
 
     # Delete Markdown documents when their corresponding Guru
     # cards are archived or removed from a folder or collection
