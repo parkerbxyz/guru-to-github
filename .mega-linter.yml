@@ -1,4 +1,3 @@
----
 # Configuration file for MegaLinter
 # See all available variables at https://megalinter.io/latest/configuration/ and in linters documentation
 
@@ -10,5 +9,6 @@ DISABLE_LINTERS:
   - PYTHON_ISORT
   - PYTHON_PYRIGHT
   - PYTHON_PYLINT
+  - MARKDOWN_MARKDOWN_LINK_CHECK # Disabled in favor of lychee
 
 SHOW_ELAPSED_TIME: true
