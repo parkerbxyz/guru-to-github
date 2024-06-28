@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.2](https://github.com/parkerbxyz/guru-to-github/compare/v2.3.1...v2.3.2) (2024-06-28)
+
+
+### Bug Fixes
+
+* **deps:** bump urllib3 from 2.2.1 to 2.2.2 in the pip group ([#72](https://github.com/parkerbxyz/guru-to-github/issues/72)) ([b42237e](https://github.com/parkerbxyz/guru-to-github/commit/b42237e8e9f4dba2b8519b41696a9f5f27065f78))
+
 ## [2.3.1](https://github.com/parkerbxyz/guru-to-github/compare/v2.3.0...v2.3.1) (2024-05-21)
 
 
