@@ -10,5 +10,6 @@ DISABLE_LINTERS:
   - PYTHON_PYRIGHT
   - PYTHON_PYLINT
   - MARKDOWN_MARKDOWN_LINK_CHECK # Disabled in favor of lychee
+  - REPOSITORY_TRIVY # Disabled in favor of Dependabot
 
 SHOW_ELAPSED_TIME: true
