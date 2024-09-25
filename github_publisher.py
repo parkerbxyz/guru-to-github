@@ -162,7 +162,7 @@ class GitHubPublisher(guru.PublisherFolders):
         response = session.post(url, json=data, headers=self.get_headers(), timeout=20)
 
         if not response.ok:
-            print("Failed to create a tree")
+            print(f"Failed to create a tree: {data}")
             print(response.json().get("message"))
             response.raise_for_status()
 
@@ -287,7 +287,7 @@ class GitHubPublisher(guru.PublisherFolders):
         response = requests.put(url, json=data, headers=self.get_headers(), timeout=20)
 
         if not response.ok:
-            print("Failed to create or update file contents")
+            print(f"Failed to create or update file contents: {data}")
             print(response.json().get("message"))
             response.raise_for_status()
 
@@ -320,7 +320,7 @@ class GitHubPublisher(guru.PublisherFolders):
         response = requests.post(url, json=data, headers=self.get_headers(), timeout=20)
 
         if not response.ok:
-            print("Failed to create a commit")
+            print(f"Failed to create a commit: {data}")
             print(response.json().get("message"))
             response.raise_for_status()
 
@@ -419,7 +419,7 @@ class GitHubPublisher(guru.PublisherFolders):
         )
 
         if not response.ok:
-            print("Failed to update reference")
+            print(f"Failed to update reference: {data}")
             print(response.json().get("message"))
             response.raise_for_status()
 
@@ -472,7 +472,7 @@ class GitHubPublisher(guru.PublisherFolders):
 
         content_response = self.get_repository_content(new_path)
         if not content_response.ok:
-            print(f"Failed to get external metadata for renamed {guru_object_type}")
+            print(f"Failed to get external metadata for renamed {guru_object_type} ('{old_path}' → '{new_path}')")
             print(content_response.json().get("message"))
             content_response.raise_for_status()
 
